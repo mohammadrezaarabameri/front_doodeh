@@ -69,7 +69,7 @@ TODO
 test.html
 ad.js
 /.cache/
-./index.html
-./index2.html
-./index3.html
-./docs/*
+index.html
+index2.html
+index3.html
+/docs/*
