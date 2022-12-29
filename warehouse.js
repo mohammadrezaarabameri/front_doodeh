@@ -59,6 +59,11 @@ const warehouse = {
   color: "badge-success",
 };
 
+const readyToLocalDelivery = {
+  name: "ReadyToLocalDelivery",
+  color: "badge-warning",
+};
+
 const readyToSale = {
   name: "FinalProduct",
   color: "badge-info",
@@ -81,6 +86,8 @@ const giveStatusColor = (data) => {
       data.result[i].statusColor = warehouse.color;
     } else if (data.result[i].status === readyToSale.name) {
       data.result[i].statusColor = readyToSale.color;
+    } else if (data.result[i].status === readyToLocalDelivery.name) {
+      data.result[i].statusColor = readyToLocalDelivery.color;
     }
   }
   return data;
@@ -93,6 +100,7 @@ const getAllAssets = async () => {
   const data = await res.json();
 
   let colorizedData = giveStatusColor(data);
+  console.log(colorizedData);
 
   return colorizedData.result;
 };
@@ -372,23 +380,28 @@ save.addEventListener("click", (e) => {
 const getAllWarehouseAsset = (data = []) => {
   const statusFilter = "warehouse";
   const typeFilter = "batch";
-  const itemTypeFilter = "chicken";
+  const itemTypeFilter = "batch";
 
   const batchWarehouse = "username@OrgD2";
 
+  let filterStatus = [
+    statusFilter,
+    readyToSale.name.toLowerCase(),
+    readyToLocalDelivery.name.toLowerCase(),
+  ];
+
+  // if is not required -> just in case of any mess
   if (data.length > 0) {
-    if (data[0].owner === batchWarehouse) {
+    if (data[0].owner == batchWarehouse) {
       data = data.filter(
         (item) =>
-          (item.status.toLowerCase() === statusFilter ||
-            item.status.toLowerCase() === readyToSale.name.toLowerCase()) &&
+          filterStatus.some((val) => val == item.status.toLowerCase()) &&
           item.type.toLowerCase() === itemTypeFilter
       );
     } else {
       data = data.filter(
         (item) =>
-          (item.status.toLowerCase() === statusFilter ||
-            item.status.toLowerCase() === readyToSale.name.toLowerCase()) &&
+          filterStatus.some((val) => val == item.status.toLowerCase()) &&
           item.type.toLowerCase() === typeFilter
       );
     }

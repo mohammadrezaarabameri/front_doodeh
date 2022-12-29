@@ -16,11 +16,10 @@ let totalPriceOfAsset = 0;
 
 const HOST = "http://116.203.61.236:4000";
 const getAssetsInMarket = "collection/Market/objects";
-const bidAsset = "channels/mychannel/chaincodes/broilerChickenCC/asset/bid";
+const bidAsset = "channels/mychannel/chaincodes/chaincode/asset/bid";
 const getUsersRole = "organizations/roles";
 
-const getTokenURL =
-  HOST + "/channels/mychannel/chaincodes/broilerChickenCC/token";
+const getTokenURL = HOST + "/channels/mychannel/chaincodes/chaincode/token";
 
 const inventorySidebar = document.getElementById("inventory-sidebar");
 const blockedInvenory = document.getElementById("blocked-amount");

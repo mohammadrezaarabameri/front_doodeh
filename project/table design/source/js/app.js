@@ -67,6 +67,9 @@ const getUsersRole = "organizations/roles";
 const changeAssetOwnership =
   "channels/mychannel/chaincodes/chaincode/asset/owner/change";
 
+const getAssetsByStatus =
+  "channels/mychannel/chaincodes/chaincode/assets/status";
+
 const getTokenURL = HOST + "/channels/mychannel/chaincodes/chaincode/token";
 
 const getChickensURL = `${HOST}/${getChickenByOwner}`;
@@ -82,6 +85,7 @@ const deleteAssetFromBatchURL = `${HOST}/${deleteAssetFromBatch}`;
 const getUsersRoleURL = `${HOST}/${getUsersRole}`;
 const changeAssetOwnershipURL = `${HOST}/${changeAssetOwnership}`;
 const changeMetaDataForBatchURL = `${HOST}/${changeMetaDataForBatch}`;
+const getAssetsByStatusURL = `${HOST}/${getAssetsByStatus}`;
 
 let assets = null;
 let batchId_ = null;
@@ -125,8 +129,28 @@ const readyToSale = {
 };
 
 const paid = {
-  name: "paid",
+  name: "ReadyToLocalDelivery",
   color: "badge-info",
+};
+
+const localDelivery = {
+  name: "LocalDelivery",
+  color: "badge-warning",
+};
+
+const globalDelivery = {
+  name: "GlobalDelivery",
+  color: "badge-warning",
+};
+
+const readyToGlobalDelivery = {
+  name: "readyToGlobalDelivery",
+  color: "badge-warning",
+};
+
+const finalProduct = {
+  name: "finalProduct",
+  color: "badge-success",
 };
 
 const roles = {
@@ -134,6 +158,9 @@ const roles = {
   wholeSaler: "wholeSaler",
   warehouse: "Warehouse",
   factory: "Factory",
+  localDelivery: "LocalDelivery",
+  globalDelivery: "GlobalDelivery",
+  customer: "Customer",
 };
 
 // combine all status into one array
@@ -157,6 +184,22 @@ const AssetStatus = [
   {
     name: paid.name,
     color: paid.color,
+  },
+  {
+    name: localDelivery.name,
+    color: localDelivery.color,
+  },
+  {
+    name: globalDelivery.name,
+    color: globalDelivery.color,
+  },
+  {
+    name: readyToGlobalDelivery.name,
+    color: readyToGlobalDelivery.color,
+  },
+  {
+    name: finalProduct.name,
+    color: finalProduct.color,
   },
 ];
 
@@ -368,9 +411,9 @@ const giveStatusColor = (data) => {
 };
 
 // request to backend for change status
-const changeStatusColorOnServer = (chickenId, selectedVal, assetType = "") => {
+const changeStatusColorOnServer = (assetId, selectedVal, assetType = "") => {
   const statusData = {
-    id: chickenId,
+    id: assetId,
     status: selectedVal,
   };
 
@@ -388,12 +431,12 @@ const changeStatusColorOnServer = (chickenId, selectedVal, assetType = "") => {
         selectedVal === warehouse.name &&
         assetType.toLowerCase() === "batch"
       ) {
-        changeAssetOwner(chickenId, warehouseOwner);
+        changeAssetOwner(assetId, warehouseOwner);
       } else if (
         selectedVal === warehouse.name &&
         assetType.toLowerCase() === "chicken"
       ) {
-        changeAssetOwner(chickenId, retailerWarehouseOwner);
+        changeAssetOwner(assetId, retailerWarehouseOwner);
       } else {
         if ($("#modal-default").hasClass("show")) {
           $("#modal-default").modal("toggle");
@@ -1159,7 +1202,7 @@ save.addEventListener("click", (e) => {
 
         userData[userIndex].status = selectedVal;
         userData[userIndex].statusColor = colorStatus.color;
-        console.log(userData[userIndex].type);
+        // console.log(userData[userIndex].type);
         changeStatusColorOnServer(
           ChickenID,
           selectedVal,
@@ -1242,6 +1285,21 @@ save.addEventListener("click", (e) => {
         removeAssetFromBatch([ChickenID], batchId_);
       }
       return;
+
+    case "DELIVERY":
+      let selectedValDel = getSelectedValueForStatus();
+
+      let assetIndex = assetDataStatus.findIndex(
+        (obj, index) => obj.id === ChickenID
+      );
+      let colorStatus = AssetStatus.filter(
+        (obj) => obj.name === selectedValDel
+      )[0];
+      assetDataStatus[assetIndex].status = selectedValDel;
+      assetDataStatus[assetIndex].statusColor = colorStatus.color;
+      changeStatusColorOnServer(ChickenID, selectedValDel);
+      itemTable.innerHTML = "";
+      getDeliveryAssetsByStatus(assetDataStatus);
   }
 });
 
@@ -1294,17 +1352,6 @@ searchInput.addEventListener("keypress", async (e) => {
     getAllChickens(data);
   }
 });
-
-/*
-searchIcon.addEventListener('click', async (e) => {
-    const info = await getChickens();
-    if (e.key === 13) {
-        let data = searchData(info, e.target.value);
-        getAllChickens(data);
-
-    }
-})
-*/
 
 const carveOutPrice = (data = [], key) => {
   let filteredData = data.filter((obj) => obj._id === key);
@@ -1548,7 +1595,7 @@ function UnSelectAll() {
 
 let username = null;
 const carveOutUsername = (username) => {
-  return username.split("@")[0];
+  return username.split("@")[1];
 };
 
 const getToken = () => {
@@ -1583,6 +1630,7 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
+        setTheTable(userRole.role);
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
@@ -1590,7 +1638,6 @@ const setRoleAccess = (currUser) => {
             historySection.style.display = "block";
             addMoneySection.style.display = "block";
             currUserRole = roles.factory;
-
             return;
 
           case "Warehouse":
@@ -1598,6 +1645,7 @@ const setRoleAccess = (currUser) => {
             shopSection.style.display = "block";
             requestSection.style.display = "block";
             window.location.replace("./Warehouse.html");
+            currUserRole = roles.warehouse;
             return;
 
           case "Wholesaler":
@@ -1607,7 +1655,6 @@ const setRoleAccess = (currUser) => {
             addMoneySection.style.display = "block";
             requestSection.style.display = "block";
             currUserRole = roles.wholeSaler;
-
             return;
 
           case "Retailer":
@@ -1617,7 +1664,21 @@ const setRoleAccess = (currUser) => {
             addMoneySection.style.display = "block";
             requestSection.style.display = "block";
             currUserRole = roles.retailer;
+            return;
 
+          case "LocalDelivery":
+            requestSection.style.display = "block";
+            currUserRole = roles.localDelivery;
+            return;
+
+          case "GlobalDelivery":
+            requestSection.style.display = "block";
+            currUserRole = roles.globalDelivery;
+            return;
+
+          case "Customer":
+            shopSection.style.display = "block";
+            currUserRole = roles.customer;
             return;
         }
       }
@@ -1853,15 +1914,137 @@ batchIds.addEventListener("change", (e) => {
   } else getAssetsOfBatch(selectedBatch);
 });
 
-window.addEventListener("load", async () => {
-  const info = await getChickens();
-  userData = info;
-  const getAssetsData = await getAssets();
-  assets = getAssetsData;
-  getAllChickens(info);
-  getAllBatches(info);
-  setBatchIdDropDown(info);
-});
+let assetDataStatus = null;
+
+const setModalonEditDelivery = () => {
+  modalSignal = "DELIVERY";
+  save.style.display = "block";
+  modalBody.innerHTML = "";
+  modalTitle.textContent = "Change status";
+  modalBody.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class='container'>
+      <select class="form-control" id="status-select">
+        <option class="${wasted.color}" value="${wasted.name}">${wasted.name}</option>
+        </select>
+        </div>
+        `
+  );
+
+  selectStatus = document.getElementById("status-select");
+  if (currUserRole == roles.localDelivery) {
+    selectStatus.insertAdjacentHTML(
+      "beforeend",
+      `
+    <option class="${readyToGlobalDelivery.color}" value="${readyToGlobalDelivery.name}">${readyToGlobalDelivery.name}</option>
+    `
+    );
+  } else if (currUserRole == roles.globalDelivery) {
+    selectStatus.insertAdjacentHTML(
+      "beforeend",
+      `
+    <option class="${finalProduct.color}" value="${finalProduct.name}">${finalProduct.name}</option>
+    `
+    );
+  }
+};
+
+const getDeliveryAssets = async (status) => {
+  const res = await fetch(`${getAssetsByStatusURL}?status=${status}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+
+  let colorizedData = giveStatusColor(data);
+
+  return colorizedData.result;
+};
+
+const getDeliveryAssetsByStatus = (data = []) => {
+  // clear the table befor adding new data-row into the table
+  batchListTable.innerHTML = "";
+  batchListTable.insertAdjacentHTML(
+    "beforeend",
+    `
+    <thead>
+    <tr>
+      <th scope="col">
+        <input
+          type="checkbox"
+          value=""
+          id="batch-check-box"
+        />
+        <label for="check1"></label>
+      </th>
+      <th scope="col">Serial No.</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Buyer</th>
+      <th scope="col">status</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody id="batch-list"></tbody>
+  `
+  );
+  let batchListAdded = document.getElementById("batch-list");
+
+  data.forEach((asset, index) =>
+    batchListAdded.insertAdjacentHTML(
+      "afterend",
+      `
+    <tr>
+      <th scope="row">
+            <input type="checkbox" value="${index}" id="asset-checkbox">
+            <label for="check1"></label>
+      </th>
+        <td>${asset.SerialNumber}</td>
+        <td>${asset.owner} </td>
+        <td>${asset.buyer}</td>
+        <td>
+          <span class="badge ${asset.statusColor}">${asset.status}</span>
+        </td>
+        <td>
+          <a class="btn btn-default btn-sm" id="edit-${index}" data-toggle="modal" data-target="#modal-default" onClick="openEditModal('${asset.id}', '${asset.id}'); setModalonEditDelivery()" href="#">
+              <i class="fas fa-pencil-alt"></i>
+          </a>
+        </td>
+    </tr>
+    `
+    )
+  );
+};
+
+async function setTheTable(userRole) {
+  console.log(userRole);
+  if (userRole == roles.localDelivery || userRole == roles.globalDelivery) {
+    let role = localDelivery.name;
+    if (userRole == roles.globalDelivery) role = globalDelivery.name;
+
+    const assetDataByStatus = await getDeliveryAssets(role);
+    assetDataStatus = assetDataByStatus;
+    getDeliveryAssetsByStatus(assetDataByStatus);
+  } else if (userRole == roles.customer) {
+    console.log("get assets by buyer");
+  } else {
+    const info = await getChickens();
+    getAllChickens(info);
+    getAllBatches(info);
+    setBatchIdDropDown(info);
+  }
+}
+
+// window.addEventListener("load", async () => {
+//   const info = await getChickens();
+//   userData = info;
+//   const getAssetsData = await getAssets();
+//   assets = getAssetsData;
+//   getAllChickens(info);
+//   getAllBatches(info);
+//   setBatchIdDropDown(info);
+// });
 
 window.addEventListener("load", async () => {
   getToken();

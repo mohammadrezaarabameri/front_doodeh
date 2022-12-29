@@ -10,15 +10,23 @@ const sellChickenURL =
   HOST + "/channels/mychannel/chaincodes/chaincode/asset/sell";
 const getUsersRole = "organizations/roles";
 const getUserHistory = "collection/Logs/user/history";
+const getAssetsByStatus =
+  "channels/mychannel/chaincodes/chaincode/assets/status";
+
 const changeStatus =
   "channels/mychannel/chaincodes/chaincode/asset/status/change";
-const changeStatusOfAssetsInBatch =
-  "channels/mychannel/chaincodes/chaincode/assetsInBatch/status/change";
+
+const addToLocalDC =
+  "channels/mychannel/chaincodes/chaincode/asset/localDC/add";
+const addToGlobalDC =
+  "channels/mychannel/chaincodes/chaincode/asset/globalDC/add";
 
 const getUsersRoleURL = `${HOST}/${getUsersRole}`;
 const getUserHistoryURL = `${HOST}/${getUserHistory}`;
 const changeAssetStatusURL = `${HOST}/${changeStatus}`;
-const changeStatusOfAssetsInBatchURL = `${HOST}/${changeStatusOfAssetsInBatch}`;
+const getAssetsByStatusURL = `${HOST}/${getAssetsByStatus}`;
+const addToLocalDCURL = `${HOST}/${addToLocalDC}`;
+const addToGlobalDCURL = `${HOST}/${addToGlobalDC}`;
 
 const amount = document.getElementById("amount");
 const addMoneyBtn = document.getElementById("add-money");
@@ -35,6 +43,8 @@ const containerfluid = document.getElementById("confirm");
 
 const inventorySidebar = document.getElementById("inventory-sidebar");
 const usernameSidebar = document.getElementById("username-sidebar");
+
+const requestTable = document.getElementById("request-table");
 
 const requestTabSection = document.getElementById("request-tab-section");
 const activityTabSection = document.getElementById("activity-tab-section");
@@ -61,7 +71,13 @@ const headers = {
 let assetsData = [];
 
 const localDelivery = {
-  name: "local delivery",
+  name: "LocalDelivery",
+  color: "badge-warning",
+};
+
+const readyToLocalDelivery = {
+  name: "ReadyToLocalDelivery",
+  color: "badge-warning",
 };
 
 let confirmBtn = null;
@@ -114,7 +130,7 @@ addMoneyBtn.addEventListener("click", (e) => {
 });
 
 const carveOutUsername = (username) => {
-  return username.split("@")[0];
+  return username.split("@")[1];
 };
 
 const getToken = () => {
@@ -125,8 +141,6 @@ const getToken = () => {
     .then((res) => res.json())
     .then((data) => {
       if (data.error !== "null") {
-        console.log(data);
-
         // for all page
         inventorySidebar.textContent = data.result?.amount;
         blockedInvenory.textContent = data.result?.blockAmount;
@@ -156,31 +170,10 @@ const getUser = async () => {
   return data.result.user;
 };
 
-const changeAssetOfBatchStatus = (batchId, selectedVal) => {
+const changeAssetStatusAndSell = (assetId, status, userToSell = "") => {
   const statusData = {
-    batchId: batchId,
-    status: selectedVal,
-  };
-
-  fetch(changeStatusOfAssetsInBatchURL, {
-    method: "POST",
-    body: JSON.stringify(statusData),
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("batch");
-      console.log(data);
-    });
-};
-
-const changeAssetStatus = (chickenId, selectedVal) => {
-  const statusData = {
-    id: chickenId,
-    status: selectedVal,
+    id: assetId,
+    status: status,
   };
 
   fetch(changeAssetStatusURL, {
@@ -192,7 +185,50 @@ const changeAssetStatus = (chickenId, selectedVal) => {
     },
   })
     .then((res) => res.json())
-    .then((data) => {});
+    .then((data) => {
+      sellChickenToCustomer(assetId, userToSell);
+    });
+};
+
+const changeAssetStatus = (
+  assetId,
+  status,
+  type = "",
+  message = "",
+  acceptBtn
+) => {
+  const statusData = {
+    id: assetId,
+    status: status,
+  };
+
+  fetch(changeAssetStatusURL, {
+    method: "POST",
+    body: JSON.stringify(statusData),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (type === "local") {
+        containerfluid.insertAdjacentHTML(
+          "afterbegin",
+          `
+          <div class="alert alert-success" role="alert" id='alert-3'>
+              ${message}
+          </div>
+      `
+        );
+        acceptBtn.innerHTML = "";
+        acceptBtn.innerText = "Accepted";
+        acceptBtn.setAttribute("disabled", true);
+
+        let alert3 = document.getElementById("alert-3");
+        setTimeout(() => alert3.remove(), 3000);
+      }
+    });
 };
 
 const sellChickenToCustomer = (idx, customer) => {
@@ -214,9 +250,7 @@ const sellChickenToCustomer = (idx, customer) => {
       confirmBtn.innerHTML = "";
       confirmBtn.innerText = "Confirm";
 
-      console.log(data);
-
-      if (data.result?.message.includes("successful")) {
+      if (data.result?.message.toLowerCase().includes("successful")) {
         containerfluid.insertAdjacentHTML(
           "afterbegin",
           `
@@ -229,11 +263,12 @@ const sellChickenToCustomer = (idx, customer) => {
         let alert3 = document.getElementById("alert-3");
         setTimeout(() => alert3.remove(), 3000);
       } else if (data.success === false) {
+        console.log(data);
         containerfluid.insertAdjacentHTML(
           "afterbegin",
           `
             <div class="alert alert-danger" role="alert" id='alert-2'>
-                ${data.message}
+                 something went wrong
             </div>  
         `
         );
@@ -245,7 +280,7 @@ const sellChickenToCustomer = (idx, customer) => {
           "afterbegin",
           `
             <div class="alert alert-success" role="alert" id='alert-3'>
-                ${data.result.message}
+                Something went Wrong
             </div>
         `
         );
@@ -269,32 +304,49 @@ const getSelectedCustomer = async (radio_name, asset_id) => {
       let userToSell = radio_type[i].value;
 
       let assetObj = assetsData.filter((item) => item._id === asset_id)[0];
-      if (assetObj.asset.type.toLowerCase() === "batch") {
-        changeAssetOfBatchStatus(asset_id, localDelivery.name);
-        sellChickenToCustomer(asset_id, userToSell);
-      } else {
-        changeAssetStatus(asset_id, localDelivery.name);
-        sellChickenToCustomer(asset_id, userToSell);
-      }
+
+      changeAssetStatusAndSell(asset_id, readyToLocalDelivery.name, userToSell);
+      // sellChickenToCustomer(asset_id, userToSell);
     }
   }
 };
 
 const setRequests = async () => {
+  requestTable.insertAdjacentHTML(
+    "beforeend",
+    `
+  <table class="table table-bordered">
+  <thead>
+    <tr style="text-align: center;">
+      <th style="width: .1rem"></th>
+      <th>ID</th>
+      <th>Product</th>
+      <th>Base Price</th>
+      <th>Requests</th>
+      <th>Confirm</th>
+    </tr>
+  </thead>
+  <tbody class="table-content" id="request-content">
+  </tbody>
+</table>
+  `
+  );
+
+  let reqContent = document.getElementById("request-content");
+
   let res = await fetch(getAssetURL, {
     method: "GET",
     headers: headers,
   });
 
   let data = await res.json();
-
   let user = await getUser();
 
   if (data.success) {
     assetsData = data.message;
     data.message.forEach((asset, index) => {
       if (asset.asset.owner === user) {
-        requestContent.insertAdjacentHTML(
+        reqContent.insertAdjacentHTML(
           "beforeend",
           `
                     <tr style="text-align: center; font-size: 16px;">
@@ -308,7 +360,6 @@ const setRequests = async () => {
             asset._id
           }')">Confirm</button></td>
                     </tr>
-
                 `
         );
 
@@ -331,6 +382,109 @@ const setRequests = async () => {
   }
 };
 
+// accept local delivert req
+const acceptLDReq = (acceptBtnId, idx) => {
+  let acceptBtn = document.getElementById(acceptBtnId);
+  acceptBtn.innerHTML = `<div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+  </div>
+</div`;
+
+  const data = {
+    id: idx,
+  };
+
+  fetch(addToLocalDCURL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.result?.message.toLowerCase().includes("successful")) {
+        changeAssetStatus(
+          idx,
+          localDelivery.name,
+          "local",
+          data.result.message,
+          acceptBtn
+        );
+      } else {
+        acceptBtn.innerHTML = "";
+        acceptBtn.innerText = "Accept";
+
+        containerfluid.insertAdjacentHTML(
+          "afterbegin",
+          `
+          <div class="alert alert-danger" role="alert" id='alert-2'>
+           something went wrong
+          </div>  
+      `
+        );
+        let alert2 = document.getElementById("alert-2");
+        setTimeout(() => alert2.remove(), 3000);
+      }
+    });
+};
+
+// accept global delivery req
+const acceptGDReq = (id) => {};
+
+const getAssetsByStatusName = (name) => {
+  fetch(`${getAssetsByStatusURL}?status=${name}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => setRequestForLD(data.result));
+};
+
+// LD -> Local Delivery
+const setRequestForLD = (data = []) => {
+  requestTable.insertAdjacentHTML(
+    "beforeend",
+    `
+  <table class="table table-bordered">
+  <thead>
+    <tr style="text-align: center;">
+      <th>Serial No.</th>
+      <th>Owner</th>
+      <th>Buyer</th>
+      <th>Price</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody class="table-content" id="request-content">
+  </tbody>
+</table>
+  `
+  );
+
+  let reqContent = document.getElementById("request-content");
+
+  data.forEach((asset, index) =>
+    reqContent.insertAdjacentHTML(
+      "beforeend",
+      `
+        <tr style="text-align: center; font-size: 16px;">
+        <td>${asset.SerialNumber}</td>
+        <td> ${asset.owner} </td>
+        <td> ${asset.buyer} $</td>
+        <td> ${asset.price}</td>
+        <td>
+        <button class="btn btn-primary1" id="accept-${index}" onclick="acceptLDReq('accept-${index}','${asset.id}' )">Accept</button>
+        </td>
+      </tr>
+
+  `
+    )
+  );
+};
+
 const setRoleAccess = (currUser) => {
   fetch(getUsersRoleURL, {
     headers: {
@@ -343,6 +497,7 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
+        console.log(userRole.role);
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
@@ -367,6 +522,7 @@ const setRoleAccess = (currUser) => {
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
             // window.location.replace("./Warehouse.html");
+            // setRequests();
             return;
 
           case "Wholesaler":
@@ -401,6 +557,29 @@ const setRoleAccess = (currUser) => {
 
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
+            return;
+
+          case "LocalDelivery":
+            requestTabSection.style.display = "block";
+
+            requestTabPanelSection.classList.add("active");
+            requestTabSection.classList.add("active");
+
+            getAssetsByStatusName(readyToLocalDelivery.name);
+            return;
+
+          case "GlobalDelivery":
+            requestTabSection.style.display = "block";
+
+            requestTabPanelSection.classList.add("active");
+            requestTabSection.classList.add("active");
+            return;
+
+          case "Customer":
+            timelineTabSection.style.display = "block";
+            timelineTabSection.classList.add("active");
+            addMoneySection.style.display = "block";
+            shopSection.style.display = "block";
             return;
         }
       }
@@ -443,8 +622,8 @@ const setUserHistoryTable = () => {
     });
 };
 
-window.addEventListener("load", async () => {
+window.addEventListener("load", () => {
   getToken();
-  await setRequests();
+  // await setRequests();
   setUserHistoryTable();
 });
