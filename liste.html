@@ -450,22 +450,26 @@
                         <div class="col-md-9" style="max-width: 100%">
                           <div class="card">
                             <div class="card-header p-2">
-                              <ul class="nav nav-pills">
+                              <ul
+                                class="nav nav-pills"
+                                id="tabs-section"
+                                style="display: none"
+                              >
                                 <li class="nav-item">
                                   <a
                                     class="nav-link active"
                                     href="#requests"
                                     data-toggle="tab"
-                                    >Batch</a
-                                  >
+                                    id="batch-section"
+                                  ></a>
                                 </li>
                                 <li class="nav-item">
                                   <a
                                     class="nav-link"
                                     href="#activity"
                                     data-toggle="tab"
-                                    >Item</a
-                                  >
+                                    id="item-section"
+                                  ></a>
                                 </li>
                               </ul>
                               <!-- /.card-header -->
@@ -480,15 +484,17 @@
                                         <!-- Check all button -->
                                         <button
                                           type="button"
-                                          class="btn btn-default btn-sm"
+                                          class="btn btn-default btn-sm body--pencil"
                                           href="#"
+                                          style="display: none"
                                         >
                                           <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button
                                           type="button"
-                                          class="btn btn-default btn-sm"
+                                          class="btn btn-default btn-sm body--info"
                                           href="#"
+                                          style="display: none"
                                         >
                                           <i class="fas fa-info"></i>
                                         </button>
@@ -505,6 +511,7 @@
                                           id="batches--id"
                                           class="form-control col-xs-12 col-md-2 mt-2"
                                           aria-label=".form-select-lg example"
+                                          style="display: none"
                                         >
                                           <option
                                             value=""
@@ -583,31 +590,34 @@
                                         <!-- Check all button -->
                                         <button
                                           type="button"
-                                          class="btn btn-default btn-sm"
+                                          class="btn btn-default btn-sm body--pencil"
                                           data-toggle="modal"
                                           data-target="#modal-default"
                                           href="#"
                                           onclick="setModalonEdit()"
+                                          style="display: none"
                                         >
                                           <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button
                                           type="button"
-                                          class="btn btn-default btn-sm"
+                                          class="btn btn-default btn-sm body--info"
                                           data-toggle="modal"
                                           data-target="#modal-default"
                                           href="#"
                                           onclick="setModalOnInfo()"
+                                          style="display: none"
                                         >
                                           <i class="fas fa-info"></i>
                                         </button>
                                         <button
                                           type="button"
-                                          class="btn btn-default btn-sm"
+                                          class="btn btn-default btn-sm body--plus"
                                           data-toggle="modal"
                                           data-target="#modal-default"
                                           id="add-asset-to-batch"
                                           onclick="setModalOnAddToBatch()"
+                                          style="display: none"
                                         >
                                           <i class="fas fa-plus"></i>
                                         </button>
@@ -654,9 +664,9 @@
                                                 />
                                                 <label for="check1"></label>
                                               </th>
-                                              <th scope="col">ID</th>
-                                              <th scope="col">Price</th>
-                                              <th scope="col">status</th>
+                                              <th scope="col"></th>
+                                              <th scope="col"></th>
+                                              <th scope="col"></th>
                                               <th scope="col"></th>
                                             </tr>
                                           </thead>

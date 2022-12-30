@@ -65,7 +65,7 @@ const readyToLocalDelivery = {
 };
 
 const readyToSale = {
-  name: "FinalProduct",
+  name: "ReadyToSale",
   color: "badge-info",
 };
 
@@ -268,7 +268,11 @@ const changeStatusColorOnServer = (assetId, selectedVal) => {
     },
   })
     .then((res) => res.json())
-    .then((data) => {});
+    .then((data) => {
+      if ($("#modal-default").hasClass("show")) {
+        $("#modal-default").modal("toggle");
+      }
+    });
 };
 
 const setChickenForSaleReq = (assId, price) => {
@@ -302,6 +306,10 @@ const setChickenForSaleReq = (assId, price) => {
 
       // TODO: change required
       if (data.result === null || data.success == false) {
+        if ($("#modal-default").hasClass("show")) {
+          $("#modal-default").modal("toggle");
+        }
+
         card.insertAdjacentHTML(
           "beforebegin",
           `
@@ -360,11 +368,19 @@ save.addEventListener("click", (e) => {
       if (assetPrice !== null) {
         if (assetPrice.value !== "") {
           if (selectedAssets.length > 0) {
+            modalBody.innerHTML = `<div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            </div>
+          </div>`;
+
             selectedAssets.forEach((item) => {
               setChickenForSale(item, Number(assetPrice.value.trim()));
             });
           } else {
-            console.log("here");
+            modalBody.innerHTML = `<div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            </div>
+          </div>`;
             setChickenForSaleReq(
               assetId.trim(),
               Number(assetPrice.value.trim())
@@ -493,7 +509,7 @@ function openEditModal(assId) {
 }
 
 const carveOutUsername = (username) => {
-  return username.split("@")[0];
+  return username.split("@")[1];
 };
 
 const carveOutPrice = (data = [], key) => {

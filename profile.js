@@ -54,6 +54,8 @@ const requestTabPanelSection = document.getElementById("requests");
 const activityTabPanelSection = document.getElementById("activity");
 const timelineTabPanelSection = document.getElementById("requests");
 
+const acceptAllBtn = document.getElementById("accept-all-request");
+
 // sidebar buttons
 const productionSection = document.getElementById("production-section");
 const warehouseSection = document.getElementById("warehouse-section");
@@ -78,6 +80,21 @@ const localDelivery = {
 const readyToLocalDelivery = {
   name: "ReadyToLocalDelivery",
   color: "badge-warning",
+};
+
+const globalDelivery = {
+  name: "GlobalDelivery",
+  color: "badge-danger",
+};
+
+const readyToGlobalDelivery = {
+  name: "readyToGlobalDelivery",
+  color: "badge-danger",
+};
+
+const sold = {
+  name: "Sold",
+  color: "badge-danger",
 };
 
 let confirmBtn = null;
@@ -212,22 +229,20 @@ const changeAssetStatus = (
   })
     .then((res) => res.json())
     .then((data) => {
-      if (type === "local") {
-        containerfluid.insertAdjacentHTML(
-          "afterbegin",
-          `
+      containerfluid.insertAdjacentHTML(
+        "afterbegin",
+        `
           <div class="alert alert-success" role="alert" id='alert-3'>
               ${message}
           </div>
       `
-        );
-        acceptBtn.innerHTML = "";
-        acceptBtn.innerText = "Accepted";
-        acceptBtn.setAttribute("disabled", true);
+      );
+      acceptBtn.innerHTML = "";
+      acceptBtn.innerText = "Accepted";
+      acceptBtn.setAttribute("disabled", true);
 
-        let alert3 = document.getElementById("alert-3");
-        setTimeout(() => alert3.remove(), 3000);
-      }
+      let alert3 = document.getElementById("alert-3");
+      setTimeout(() => alert3.remove(), 3000);
     });
 };
 
@@ -247,10 +262,11 @@ const sellChickenToCustomer = (idx, customer) => {
   })
     .then((res) => res.json())
     .then((data) => {
-      confirmBtn.innerHTML = "";
-      confirmBtn.innerText = "Confirm";
-
       if (data.result?.message.toLowerCase().includes("successful")) {
+        confirmBtn.innerHTML = "";
+        confirmBtn.innerText = "Confirmed";
+        confirmBtn.setAttribute("disbaled", true);
+
         containerfluid.insertAdjacentHTML(
           "afterbegin",
           `
@@ -263,7 +279,9 @@ const sellChickenToCustomer = (idx, customer) => {
         let alert3 = document.getElementById("alert-3");
         setTimeout(() => alert3.remove(), 3000);
       } else if (data.success === false) {
-        console.log(data);
+        confirmBtn.innerHTML = "";
+        confirmBtn.innerText = "Confirm";
+
         containerfluid.insertAdjacentHTML(
           "afterbegin",
           `
@@ -276,6 +294,9 @@ const sellChickenToCustomer = (idx, customer) => {
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
       } else {
+        confirmBtn.innerHTML = "";
+        confirmBtn.innerText = "Confirm";
+
         containerfluid.insertAdjacentHTML(
           "afterbegin",
           `
@@ -311,6 +332,7 @@ const getSelectedCustomer = async (radio_name, asset_id) => {
   }
 };
 
+// requests of warehouse
 const setRequests = async () => {
   requestTable.insertAdjacentHTML(
     "beforeend",
@@ -431,8 +453,54 @@ const acceptLDReq = (acceptBtnId, idx) => {
 };
 
 // accept global delivery req
-const acceptGDReq = (id) => {};
+const acceptGDReq = (acceptBtnId, idx) => {
+  let acceptBtn = document.getElementById(acceptBtnId);
+  acceptBtn.innerHTML = `<div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+  </div>
+</div`;
 
+  const data = {
+    id: idx,
+  };
+
+  fetch(addToGlobalDCURL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.result?.message.toLowerCase().includes("successful")) {
+        changeAssetStatus(
+          idx,
+          globalDelivery.name,
+          "global",
+          data.result.message,
+          acceptBtn
+        );
+      } else {
+        acceptBtn.innerHTML = "";
+        acceptBtn.innerText = "Accept";
+
+        containerfluid.insertAdjacentHTML(
+          "afterbegin",
+          `
+          <div class="alert alert-danger" role="alert" id='alert-2'>
+           something went wrong
+          </div>  
+      `
+        );
+        let alert2 = document.getElementById("alert-2");
+        setTimeout(() => alert2.remove(), 3000);
+      }
+    });
+};
+
+// get local delivert req
 const getAssetsByStatusName = (name) => {
   fetch(`${getAssetsByStatusURL}?status=${name}`, {
     headers: {
@@ -445,12 +513,16 @@ const getAssetsByStatusName = (name) => {
 
 // LD -> Local Delivery
 const setRequestForLD = (data = []) => {
+  acceptAllBtn.style.display = "block";
   requestTable.insertAdjacentHTML(
     "beforeend",
     `
   <table class="table table-bordered">
   <thead>
     <tr style="text-align: center;">
+    <th scope="col">
+        <input type="checkbox" value="" id="batch-check-box" onclick='selectAll()' />
+      </th>
       <th>Serial No.</th>
       <th>Owner</th>
       <th>Buyer</th>
@@ -471,6 +543,10 @@ const setRequestForLD = (data = []) => {
       "beforeend",
       `
         <tr style="text-align: center; font-size: 16px;">
+        <th scope="row">
+            <input type="checkbox" value="${index}" id="asset-checkbox">
+            <label for="check1"></label>
+        </th>
         <td>${asset.SerialNumber}</td>
         <td> ${asset.owner} </td>
         <td> ${asset.buyer} $</td>
@@ -484,6 +560,92 @@ const setRequestForLD = (data = []) => {
     )
   );
 };
+
+// get global delivert req
+const getAssetsByStatusNameG = (name) => {
+  fetch(`${getAssetsByStatusURL}?status=${name}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => setRequestForGD(data.result));
+};
+
+// GD -> Global Delivery
+const setRequestForGD = (data = []) => {
+  acceptAllBtn.style.display = "block";
+
+  requestTable.insertAdjacentHTML(
+    "beforeend",
+    `
+  <table class="table table-bordered">
+  <thead>
+    <tr style="text-align: center;">
+    <th scope="col">
+        <input type="checkbox" value="" id="batch-check-box" />
+        <label for="check1"></label>
+      </th>
+      <th>Serial No.</th>
+      <th>Owner</th>
+      <th>Buyer</th>
+      <th>Price</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody class="table-content" id="request-content">
+  </tbody>
+</table>
+  `
+  );
+
+  let reqContent = document.getElementById("request-content");
+
+  data.forEach((asset, index) =>
+    reqContent.insertAdjacentHTML(
+      "beforeend",
+      `
+        <tr style="text-align: center; font-size: 16px;">
+        <th scope="row">
+            <input type="checkbox" value="${index}" id="asset-checkbox">
+            <label for="check1"></label>
+        </th>
+        <td>${asset.SerialNumber}</td>
+        <td> ${asset.owner} </td>
+        <td> ${asset.buyer} $</td>
+        <td> ${asset.price}</td>
+        <td>
+        <button class="btn btn-primary1" id="accept-${index}" onclick="acceptGDReq('accept-${index}','${asset.id}' )">Accept</button>
+        </td>
+      </tr>
+
+  `
+    )
+  );
+};
+
+function selectAll() {
+  let btn = document.getElementById("batch-check-box");
+  if (btn.checked) {
+    var items = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type == "checkbox") {
+        items[i].checked = true;
+      }
+    }
+  } else {
+    UnSelectAll();
+  }
+}
+
+function UnSelectAll() {
+  var items = document.querySelectorAll('input[type="checkbox"]');
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type == "checkbox") {
+      items[i].checked = false;
+    }
+  }
+}
 
 const setRoleAccess = (currUser) => {
   fetch(getUsersRoleURL, {
@@ -522,7 +684,7 @@ const setRoleAccess = (currUser) => {
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
             // window.location.replace("./Warehouse.html");
-            // setRequests();
+            setRequests();
             return;
 
           case "Wholesaler":
@@ -573,6 +735,7 @@ const setRoleAccess = (currUser) => {
 
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
+            getAssetsByStatusNameG(readyToGlobalDelivery.name);
             return;
 
           case "Customer":

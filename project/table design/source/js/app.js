@@ -33,10 +33,17 @@ const inventorySidebar = document.getElementById("inventory-sidebar");
 const blockedInvenory = document.getElementById("blocked-amount");
 const usernameSidebar = document.getElementById("username-sidebar");
 
+const batchSection = document.getElementById("batch-section");
+const itemSection = document.getElementById("item-section");
+const tabsSection = document.getElementById("tabs-section");
+
+const penBtn = document.querySelectorAll(".body--pencil");
+const infoBtn = document.querySelectorAll(".body--info");
+const plusBtn = document.querySelectorAll(".body--plus");
+
 const HOST = "http://116.203.61.236:4000";
 
-const getChickenByOwner =
-  "channels/mychannel/chaincodes/chaincode/assets/owner";
+const getAssetByOwner = "channels/mychannel/chaincodes/chaincode/assets/owner";
 
 const setChickenForSale =
   "channels/mychannel/chaincodes/chaincode/collection/Market/asset/public";
@@ -70,9 +77,14 @@ const changeAssetOwnership =
 const getAssetsByStatus =
   "channels/mychannel/chaincodes/chaincode/assets/status";
 
+const getAssetsByBuyer = "channels/mychannel/chaincodes/chaincode/assets/buyer";
+
+const takeDelivery =
+  "channels/mychannel/chaincodes/chaincode/asset/delivery/take";
+
 const getTokenURL = HOST + "/channels/mychannel/chaincodes/chaincode/token";
 
-const getChickensURL = `${HOST}/${getChickenByOwner}`;
+const getAssetsOwnerURL = `${HOST}/${getAssetByOwner}`;
 const setChickenForSaleURL = `${HOST}/${setChickenForSale}`;
 const getAssetsURL = `${HOST}/${getAssetsInMarket}`;
 const getAssetHistoryURL = `${HOST}/${getAssetHistory}`;
@@ -86,6 +98,8 @@ const getUsersRoleURL = `${HOST}/${getUsersRole}`;
 const changeAssetOwnershipURL = `${HOST}/${changeAssetOwnership}`;
 const changeMetaDataForBatchURL = `${HOST}/${changeMetaDataForBatch}`;
 const getAssetsByStatusURL = `${HOST}/${getAssetsByStatus}`;
+const getAssetsByBuyerURL = `${HOST}/${getAssetsByBuyer}`;
+const takeDeliveryURL = `${HOST}/${takeDelivery}`;
 
 let assets = null;
 let batchId_ = null;
@@ -129,8 +143,13 @@ const readyToSale = {
 };
 
 const paid = {
-  name: "ReadyToLocalDelivery",
+  name: "paid",
   color: "badge-info",
+};
+
+const readyToLocalDelivery = {
+  name: "ReadyToLocalDelivery",
+  color: "badge-warning",
 };
 
 const localDelivery = {
@@ -140,12 +159,12 @@ const localDelivery = {
 
 const globalDelivery = {
   name: "GlobalDelivery",
-  color: "badge-warning",
+  color: "badge-danger",
 };
 
 const readyToGlobalDelivery = {
   name: "readyToGlobalDelivery",
-  color: "badge-warning",
+  color: "badge-danger",
 };
 
 const finalProduct = {
@@ -184,6 +203,10 @@ const AssetStatus = [
   {
     name: paid.name,
     color: paid.color,
+  },
+  {
+    name: readyToLocalDelivery.name,
+    color: readyToLocalDelivery.color,
   },
   {
     name: localDelivery.name,
@@ -437,6 +460,40 @@ const changeStatusColorOnServer = (assetId, selectedVal, assetType = "") => {
         assetType.toLowerCase() === "chicken"
       ) {
         changeAssetOwner(assetId, retailerWarehouseOwner);
+      } else if (assetType.toLowerCase() === "buyer") {
+        let assetObj = assetDataBuyer.find((obj) => obj.id === assetId);
+        let assetIndex = assetDataBuyer.findIndex((obj) => obj.id === assetId);
+        assetObj.status = paid.name;
+        assetObj.statusColor = paid.color;
+        assetDataOwnedBuyer.push(assetObj);
+
+        confirmBuyerBtn.remove();
+
+        assetDataBuyer.splice(assetIndex, 1);
+        setTableRowsForBuyerAsset(assetDataBuyer);
+        setTheTableForConfirmedBuy(assetDataOwnedBuyer);
+
+        card.insertAdjacentHTML(
+          "beforebegin",
+          `
+        <div class="alert alert-success" role="alert" id='alert-2'>
+                Asset confirmed to be received; 
+        </div>
+        `
+        );
+        let alert2 = document.getElementById("alert-2");
+        setTimeout(() => alert2.remove(), 3000);
+      } else if (assetType == "delivery") {
+        card.insertAdjacentHTML(
+          "beforebegin",
+          `
+        <div class="alert alert-success" role="alert" id='alert-2'>
+                Asset status changed successfully 
+        </div>
+        `
+        );
+        let alert2 = document.getElementById("alert-2");
+        setTimeout(() => alert2.remove(), 3000);
       } else {
         if ($("#modal-default").hasClass("show")) {
           $("#modal-default").modal("toggle");
@@ -1288,23 +1345,22 @@ save.addEventListener("click", (e) => {
 
     case "DELIVERY":
       let selectedValDel = getSelectedValueForStatus();
-
-      let assetIndex = assetDataStatus.findIndex(
-        (obj, index) => obj.id === ChickenID
-      );
-      let colorStatus = AssetStatus.filter(
-        (obj) => obj.name === selectedValDel
-      )[0];
-      assetDataStatus[assetIndex].status = selectedValDel;
-      assetDataStatus[assetIndex].statusColor = colorStatus.color;
-      changeStatusColorOnServer(ChickenID, selectedValDel);
+      modalBody.innerHTML = `
+      <div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+      </div>
+    </div>
+      `;
+      let assetIndex = assetDataStatus.findIndex((obj) => obj.id === ChickenID);
+      assetDataStatus.splice(assetIndex, 1);
+      changeStatusColorOnServer(ChickenID, selectedValDel, "delivery");
       itemTable.innerHTML = "";
       getDeliveryAssetsByStatus(assetDataStatus);
   }
 });
 
 const getChickens = async () => {
-  const res = await fetch(getChickensURL, {
+  const res = await fetch(getAssetsOwnerURL, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -1915,6 +1971,9 @@ batchIds.addEventListener("change", (e) => {
 });
 
 let assetDataStatus = null;
+let assetDataBuyer = null;
+let assetDataOwnedBuyer = null;
+let confirmBuyerBtn = null;
 
 const setModalonEditDelivery = () => {
   modalSignal = "DELIVERY";
@@ -2017,9 +2076,198 @@ const getDeliveryAssetsByStatus = (data = []) => {
   );
 };
 
+const getBuyerAssets = async () => {
+  const res = await fetch(getAssetsByBuyerURL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  let colorizedData = giveStatusColor(data);
+  return colorizedData.result;
+};
+
+const getBuyerPaidAsset = async () => {
+  const res = await fetch(getAssetsOwnerURL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+  let colorizedData = giveStatusColor(data);
+  return colorizedData.result;
+};
+
+const confirmReceived = (idx, recvBtnId) => {
+  confirmBuyerBtn = document.getElementById(recvBtnId);
+  confirmBuyerBtn.innerHTML = `
+      <div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+      </div>
+    </div>
+  `;
+  const data = {
+    id: idx,
+  };
+
+  fetch(takeDeliveryURL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      changeStatusColorOnServer(idx, paid.name, "buyer");
+    });
+};
+
+// Receipt section
+const setTableRowsForBuyerAsset = (data = []) => {
+  // clear the table befor adding new data-row into the table
+  batchListTable.innerHTML = "";
+  batchListTable.insertAdjacentHTML(
+    "beforeend",
+    `
+    <thead>
+    <tr>
+      <th scope="col">
+        <input
+          type="checkbox"
+          value=""
+          id="batch-check-box"
+        />
+        <label for="check1"></label>
+      </th>
+      <th scope="col">Serial No.</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Price</th>
+      <th scope="col">status</th>
+      <th scope="col">History</th>
+    </tr>
+  </thead>
+  <tbody id="batch-list"></tbody>
+  `
+  );
+  let batchListAdded = document.getElementById("batch-list");
+
+  data.forEach((asset, index) => {
+    batchListAdded.insertAdjacentHTML(
+      "afterend",
+      `
+    <tr>
+      <th scope="row">
+            <input type="checkbox" value="${index}" id="asset-checkbox">
+            <label for="check1"></label>
+      </th>
+        <td>${asset.SerialNumber}</td>
+        <td>${asset.owner} </td>
+        <td>${asset.price}</td>
+        <td>
+          <span class="badge ${asset.statusColor}">${asset.status}</span>
+        </td>
+        <td id='confirm-btn-${index}'>
+            <a class="btn btn-default btn-sm" id="view-${index}" data-toggle="modal" data-target="#modal-default" onClick="openEditModal(${index}, '${asset.id}'); setModalOnView();" href="#">
+              <i class="fa fa-history">
+              </i>
+            </a>
+        
+        </td>
+    </tr>
+    `
+    );
+
+    if (asset.status == finalProduct.name) {
+      var confirmBtnRowTable = document.getElementById(`confirm-btn-${index}`);
+      confirmBtnRowTable.insertAdjacentHTML(
+        "beforeend",
+        `
+            <a class='btn btn-secondary btn-sm' id='confirm-${index}' onclick="confirmReceived('${asset.id}', 'confirm-${index}')">Received</a>
+        `
+      );
+    }
+  });
+};
+
+// paids section
+const setTheTableForConfirmedBuy = (data = []) => {
+  itemTable.innerHTML = "";
+  itemTable.insertAdjacentHTML(
+    "beforeend",
+    `
+    <thead>
+    <tr>
+      <th scope="col">
+        <input
+          type="checkbox"
+          value=""
+          id="batch-check-box"
+        />
+        <label for="check1"></label>
+      </th>
+      <th scope="col">Serial No.</th>
+      <th scope="col">Owner</th>
+      <th scope="col">status</th>
+      <th scope="col">History</th>
+    </tr>
+  </thead>
+<tbody id="book-list"></tbody>
+  `
+  );
+
+  let itemTableList = document.getElementById("book-list");
+
+  data.forEach((asset, index) => {
+    itemTableList.insertAdjacentHTML(
+      "afterend",
+      `
+      <tr>
+        <th scope="row">
+              <input type="checkbox" value="${index}" id="asset-checkbox">
+              <label for="check1"></label>
+        </th>
+        <td>${asset.SerialNumber}</td>
+        <td>${asset.owner} </td>
+        <td>
+          <span class="badge ${asset.statusColor}">${asset.status}</span>
+        </td>
+        <td>
+        <a class="btn btn-default btn-sm" id="view-${index}" data-toggle="modal" data-target="#modal-default" onClick="openEditModal(${index}, '${asset.id}'); setModalOnView();" href="#">
+          <i class="fa fa-history">
+          </i>
+      </a>
+        
+        </td>
+    </tr>
+      `
+    );
+  });
+};
+
+const hideAllTopBtnTable = () => {
+  infoBtn.forEach((btn) => (btn.style.display = "none"));
+  penBtn.forEach((btn) => (btn.style.display = "none"));
+  plusBtn.forEach((btn) => (btn.style.display = "none"));
+  batchIds.style.display = "none";
+};
+
+const showAllTopBtnTable = () => {
+  tabsSection.style.display = "flex";
+  infoBtn.forEach((btn) => (btn.style.display = "inline-block"));
+  penBtn.forEach((btn) => (btn.style.display = "inline-block"));
+  plusBtn.forEach((btn) => (btn.style.display = "inline-block"));
+  batchIds.style.display = "block";
+};
+
 async function setTheTable(userRole) {
-  console.log(userRole);
   if (userRole == roles.localDelivery || userRole == roles.globalDelivery) {
+    penBtn[0].style.display = "inline-block";
+
     let role = localDelivery.name;
     if (userRole == roles.globalDelivery) role = globalDelivery.name;
 
@@ -2027,24 +2275,36 @@ async function setTheTable(userRole) {
     assetDataStatus = assetDataByStatus;
     getDeliveryAssetsByStatus(assetDataByStatus);
   } else if (userRole == roles.customer) {
-    console.log("get assets by buyer");
+    tabsSection.style.display = "flex";
+    batchSection.textContent = "Receipt";
+    itemSection.textContent = "Paids";
+    // set receive all btn
+    penBtn[0].style.display = "inline-block";
+    penBtn[0].innerHTML = "";
+    penBtn[0].textContent = "Receive All";
+    penBtn[0].setAttribute("id", "receive-all-assets");
+    penBtn[0].classList.remove("btn-sm");
+    penBtn[0].classList.add("btn-md");
+
+    const buyerAssets = await getBuyerAssets();
+    assetDataBuyer = buyerAssets;
+    setTableRowsForBuyerAsset(buyerAssets);
+
+    const buyerOwnedAssets = await getBuyerPaidAsset();
+    assetDataOwnedBuyer = buyerOwnedAssets;
+    setTheTableForConfirmedBuy(buyerOwnedAssets);
   } else {
+    showAllTopBtnTable();
+    batchSection.textContent = "Batch";
+    itemSection.textContent = "Item";
+
     const info = await getChickens();
+    userData = info;
     getAllChickens(info);
     getAllBatches(info);
     setBatchIdDropDown(info);
   }
 }
-
-// window.addEventListener("load", async () => {
-//   const info = await getChickens();
-//   userData = info;
-//   const getAssetsData = await getAssets();
-//   assets = getAssetsData;
-//   getAllChickens(info);
-//   getAllBatches(info);
-//   setBatchIdDropDown(info);
-// });
 
 window.addEventListener("load", async () => {
   getToken();
