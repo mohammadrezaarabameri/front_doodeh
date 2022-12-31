@@ -723,6 +723,7 @@ const setRoleAccess = (currUser) => {
 
           case "LocalDelivery":
             requestTabSection.style.display = "block";
+            listSection.style.display = "block";
 
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
@@ -732,6 +733,7 @@ const setRoleAccess = (currUser) => {
 
           case "GlobalDelivery":
             requestTabSection.style.display = "block";
+            listSection.style.display = "block";
 
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
@@ -739,6 +741,7 @@ const setRoleAccess = (currUser) => {
             return;
 
           case "Customer":
+            listSection.style.display = "block";
             timelineTabSection.style.display = "block";
             timelineTabSection.classList.add("active");
             addMoneySection.style.display = "block";

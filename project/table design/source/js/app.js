@@ -462,6 +462,7 @@ const changeStatusColorOnServer = (assetId, selectedVal, assetType = "") => {
         changeAssetOwner(assetId, retailerWarehouseOwner);
       } else if (assetType.toLowerCase() === "buyer") {
         let assetObj = assetDataBuyer.find((obj) => obj.id === assetId);
+        assetObj.owner = assetObj.buyer;
         let assetIndex = assetDataBuyer.findIndex((obj) => obj.id === assetId);
         assetObj.status = paid.name;
         assetObj.statusColor = paid.color;
@@ -484,6 +485,9 @@ const changeStatusColorOnServer = (assetId, selectedVal, assetType = "") => {
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
       } else if (assetType == "delivery") {
+        if ($("#modal-default").hasClass("show")) {
+          $("#modal-default").modal("toggle");
+        }
         card.insertAdjacentHTML(
           "beforebegin",
           `
@@ -1007,7 +1011,7 @@ const setModalOnView = () => {
                         <div class="timeline">
                           <!-- timeline time label -->
                           <div class="time-label1">
-                            <span class="bg-warning">Oil-ID:${item.asset.SerialNumber.substring(
+                            <span class="bg-warning">Asset-ID:${item.asset.SerialNumber.substring(
                               0,
                               10
                             )}</span>
@@ -1723,16 +1727,19 @@ const setRoleAccess = (currUser) => {
             return;
 
           case "LocalDelivery":
+            listSection.style.display = "block";
             requestSection.style.display = "block";
             currUserRole = roles.localDelivery;
             return;
 
           case "GlobalDelivery":
+            listSection.style.display = "block";
             requestSection.style.display = "block";
             currUserRole = roles.globalDelivery;
             return;
 
           case "Customer":
+            listSection.style.display = "block";
             shopSection.style.display = "block";
             currUserRole = roles.customer;
             return;

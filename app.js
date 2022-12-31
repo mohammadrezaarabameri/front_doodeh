@@ -199,7 +199,7 @@ function getAllAssetsInMarket() {
                       <div class="col-sm-4 border-right">
                         <div class="description-block">
                           <h5 class="description-header">PRODUCT</h5>
-                          <span class="description-text">OIL</span>
+                          <span class="description-text">Doodeh</span>
                         </div>
                         <!-- /.description-block -->
                       </div>
@@ -270,7 +270,7 @@ function openEditModal(id) {
 let username = null;
 //name for proifle
 const carveOutUsername = (username) => {
-  return username.split("@")[0];
+  return username.split("@")[1];
 };
 
 const setRoleAccess = (currUser) => {
@@ -314,6 +314,23 @@ const setRoleAccess = (currUser) => {
             historySection.style.display = "block";
             addMoneySection.style.display = "block";
             requestSection.style.display = "block";
+            return;
+          case "LocalDelivery":
+            listSection.style.display = "block";
+            requestSection.style.display = "block";
+            currUserRole = roles.localDelivery;
+            return;
+
+          case "GlobalDelivery":
+            listSection.style.display = "block";
+            requestSection.style.display = "block";
+            currUserRole = roles.globalDelivery;
+            return;
+
+          case "Customer":
+            listSection.style.display = "block";
+            shopSection.style.display = "block";
+            currUserRole = roles.customer;
             return;
         }
       }

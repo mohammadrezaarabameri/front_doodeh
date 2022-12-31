@@ -2,8 +2,7 @@ const HOST = "http://116.203.61.236:4000";
 
 // combination of 2 below urls --> cart
 const getAssetURL = HOST + "/collection/Market/objects";
-const getTokenURL =
-  HOST + "/channels/mychannel/chaincodes/broilerChickenCC/token";
+const getTokenURL = HOST + "/channels/mychannel/chaincodes/chaincode/token";
 const getUsersRole = "organizations/roles";
 
 const tableContent = document.querySelector(".table-content");
@@ -84,7 +83,7 @@ window.addEventListener("load", async () => {
 let username = "";
 const carveOutUsername = (username1) => {
   if (username1.includes("@")) {
-    return username1.split("@")[0];
+    return username1.split("@")[1];
   } else {
     return username1;
   }
@@ -131,6 +130,23 @@ const setRoleAccess = (currUser) => {
             historySection.style.display = "block";
             addMoneySection.style.display = "block";
             requestSection.style.display = "block";
+            return;
+          case "LocalDelivery":
+            listSection.style.display = "block";
+            requestSection.style.display = "block";
+            currUserRole = roles.localDelivery;
+            return;
+
+          case "GlobalDelivery":
+            listSection.style.display = "block";
+            requestSection.style.display = "block";
+            currUserRole = roles.globalDelivery;
+            return;
+
+          case "Customer":
+            listSection.style.display = "block";
+            shopSection.style.display = "block";
+            currUserRole = roles.customer;
             return;
         }
       }

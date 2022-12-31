@@ -88,7 +88,7 @@ let str =
 
 let username = null;
 const carveOutUsername = (username) => {
-  return username.split("@")[0];
+  return username.split("@")[1];
 };
 
 const getToken = () => {
@@ -267,7 +267,7 @@ const enableLoadingForElement = () => {
 
 const disbaleLoadingForElement = () => {
   addBatchBtn.innerHTML = "";
-  addBatchBtn.innerText = "Add Oil";
+  addBatchBtn.innerText = "Add Asset";
   addBatchBtn.removeAttribute("disabled");
 };
 
