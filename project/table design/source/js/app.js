@@ -79,6 +79,9 @@ const getAssetsByStatus =
 
 const getAssetsByBuyer = "channels/mychannel/chaincodes/chaincode/assets/buyer";
 
+const getAllAssetsByGD = "channels/mychannel/chaincodes/chaincode/assets/GD";
+const getAllAssetsByLD = "channels/mychannel/chaincodes/chaincode/assets/LD";
+
 const takeDelivery =
   "channels/mychannel/chaincodes/chaincode/asset/delivery/take";
 
@@ -100,6 +103,8 @@ const changeMetaDataForBatchURL = `${HOST}/${changeMetaDataForBatch}`;
 const getAssetsByStatusURL = `${HOST}/${getAssetsByStatus}`;
 const getAssetsByBuyerURL = `${HOST}/${getAssetsByBuyer}`;
 const takeDeliveryURL = `${HOST}/${takeDelivery}`;
+const getAllAssetsByGDURL = `${HOST}/${getAllAssetsByGD}`;
+const getAllAssetsByLDURL = `${HOST}/${getAllAssetsByLD}`;
 
 let assets = null;
 let batchId_ = null;
@@ -429,7 +434,6 @@ const giveStatusColor = (data) => {
       data.result[i].statusColor = produced.color;
     }
   }
-
   return data;
 };
 
@@ -1427,6 +1431,58 @@ const addAssetToList = (assetId) => {
   }
 };
 
+const setItemTable = (data = []) => {
+  itemTable.innerHTML = "";
+  itemTable.insertAdjacentHTML(
+    "beforeend",
+    `
+  <thead>
+  <tr id="cols-section">
+      <th scope="col">
+          <input
+            type="checkbox"
+            value=""
+            id="asset-check-box"
+          />
+          <label for="check1"></label>
+        </th>
+
+        <th scope="col">Serial No.</th>
+        
+        <th scope="col">Owner</th>
+        <th scope="col">Buyer</th>
+        <th scope="col">status</th>
+
+      </tr>
+    </thead>
+    <tbody id="item-list"></tbody>
+  `
+  );
+
+  let itemTableList = document.getElementById("item-list");
+
+  data.forEach((asset, index) =>
+    itemTableList.insertAdjacentHTML(
+      `beforeend`,
+      `
+      <tr>
+      <th scope="row">
+                <input type="checkbox" value="${index}" id="asset-checkbox" onClick="">
+                <label for="check1"></label>
+          </th>
+          <td>${asset.SerialNumber}</td>
+          <td>${asset.owner} </td>
+          <td>${asset.buyer}</td>
+          <td>
+            <span class="badge ${asset.statusColor}">${asset.status}</span>
+          </td>
+
+      </tr>
+  `
+    )
+  );
+};
+
 function getAllChickens(data = []) {
   const filterItemKey = "Chicken";
   data = data.filter((item) => item.type === filterItemKey || item.type === "");
@@ -1463,13 +1519,13 @@ function getAllChickens(data = []) {
       "beforeend",
       `
       <tr>
-      <th scope="row">
-            <input type="checkbox" value="${index}" id="asset-checkbox" onClick="addAssetToList('${
+          <th scope="row">
+                <input type="checkbox" value="${index}" id="asset-checkbox" onClick="addAssetToList('${
         chicken.id
       }')">
-            <label for="check1"></label>
-      </th>
-        <td>${chicken.SerialNumber}</td>
+                <label for="check1"></label>
+          </th>
+          <td>${chicken.SerialNumber}</td>
         
         <td id='chicken-price-${index}'>${chicken.price}</td>
         <td>
@@ -1981,6 +2037,7 @@ let assetDataStatus = null;
 let assetDataBuyer = null;
 let assetDataOwnedBuyer = null;
 let confirmBuyerBtn = null;
+let assetDataDeliveryStatusForCompanies = null;
 
 const setModalonEditDelivery = () => {
   modalSignal = "DELIVERY";
@@ -2256,6 +2313,24 @@ const setTheTableForConfirmedBuy = (data = []) => {
   });
 };
 
+// set table status for LD/GD
+const getAllAssetsForDelivery = async (type = "LD") => {
+  const res = await fetch(
+    `${type == "LD" ? getAllAssetsByLDURL : getAllAssetsByGDURL}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await res.json();
+
+  let colorizedData = giveStatusColor(data);
+
+  return colorizedData.result;
+};
+
 const hideAllTopBtnTable = () => {
   infoBtn.forEach((btn) => (btn.style.display = "none"));
   penBtn.forEach((btn) => (btn.style.display = "none"));
@@ -2273,14 +2348,30 @@ const showAllTopBtnTable = () => {
 
 async function setTheTable(userRole) {
   if (userRole == roles.localDelivery || userRole == roles.globalDelivery) {
+    showAllTopBtnTable();
+    // set the tabs display section
+    tabsSection.style.display = "flex";
+    // first tab
+    batchSection.textContent = "Accepted";
+    // second tab
+    itemSection.textContent = "Status";
+
     penBtn[0].style.display = "inline-block";
 
     let role = localDelivery.name;
     if (userRole == roles.globalDelivery) role = globalDelivery.name;
 
+    // set asset table
     const assetDataByStatus = await getDeliveryAssets(role);
     assetDataStatus = assetDataByStatus;
     getDeliveryAssetsByStatus(assetDataByStatus);
+
+    // set status table
+    let type = "LD";
+    if (userRole == roles.globalDelivery) type = "GD";
+    const assetStatusForDelivery = await getAllAssetsForDelivery(type);
+    assetDataDeliveryStatusForCompanies = assetStatusForDelivery;
+    setItemTable(assetStatusForDelivery);
   } else if (userRole == roles.customer) {
     tabsSection.style.display = "flex";
     batchSection.textContent = "Receipt";

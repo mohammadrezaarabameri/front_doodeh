@@ -448,84 +448,120 @@
                                     <!-- The requests -->
 
                                     <div class="card-body p-0">
-                                      <div class="mailbox-controls">
-                                        <!-- Check all button -->
-                                        <button
-                                          type="button"
-                                          class="btn btn-default btn-sm"
-                                          href="#"
-                                        >
-                                          <i class="fas fa-pencil-alt"></i>
-                                        </button>
-                                        <button
-                                          type="button"
-                                          class="btn btn-default btn-sm"
-                                          href="#"
-                                        >
-                                          <i class="fas fa-info"></i>
-                                        </button>
-                                        <button
-                                          type="button"
-                                          class="btn btn-default btn-sm"
-                                          href="#"
-                                          id="batch--delete-asset"
-                                          style="display: none"
-                                        >
-                                          <i class="fas fa-trash"></i>
-                                        </button>
-                                        <div class="float-right">
-                                          1-50
-                                          <div class="btn-group">
-                                            <button
-                                              type="button"
-                                              class="btn btn-default btn-sm"
-                                            >
-                                              <i
-                                                class="fas fa-chevron-left"
-                                              ></i>
-                                            </button>
-                                            <button
-                                              type="button"
-                                              class="btn btn-default btn-sm"
-                                            >
-                                              <i
-                                                class="fas fa-chevron-right"
-                                              ></i>
-                                            </button>
-                                          </div>
-                                          <!-- /.btn-group -->
-                                        </div>
-                                        <!-- /.float-right -->
-                                      </div>
-                                      <div
-                                        class="table-responsive mailbox-messages"
-                                        style="max-width: 100%"
+                                      <ul
+                                        class="nav nav-pills"
+                                        id="tabs-section"
                                       >
-                                        <table
-                                          class="table table-bordered table-striped"
-                                          style="max-width: 100%"
-                                          id="warehouse-list-table"
-                                        >
-                                          <thead>
-                                            <tr>
-                                              <th scope="col">
-                                                <input
-                                                  type="checkbox"
-                                                  value=""
-                                                  id="warehouse-check-box"
-                                                />
-                                                <label for="check1"></label>
-                                              </th>
-                                              <th scope="col">ID</th>
-                                              <th scope="col">Count</th>
-                                              <th scope="col">Price</th>
-                                              <th scope="col">status</th>
-                                              <th scope="col"></th>
-                                            </tr>
-                                          </thead>
-                                          <tbody id="warehouse-list"></tbody>
-                                        </table>
+                                        <li class="nav-item">
+                                          <a
+                                            class="nav-link active"
+                                            href="#assets"
+                                            data-toggle="tab"
+                                            id="batch-section"
+                                          >Assets</a>
+                                        </li>
+                                        <li class="nav-item">
+                                          <a
+                                            class="nav-link"
+                                            href="#status"
+                                            data-toggle="tab"
+                                            id="item-section"
+                                          >Status</a>
+                                        </li>
+                                      </ul>
+                                      <div class="tab-content">
+                                        <div class="tab-pane active" id="assets">
+                                          <div class="mailbox-controls">
+                                            <!-- Check all button -->
+                                            <button
+                                              type="button"
+                                              class="btn btn-default btn-sm"
+                                              href="#"
+                                            >
+                                              <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <button
+                                              type="button"
+                                              class="btn btn-default btn-sm"
+                                              href="#"
+                                            >
+                                              <i class="fas fa-info"></i>
+                                            </button>
+                                            <button
+                                              type="button"
+                                              class="btn btn-default btn-sm"
+                                              href="#"
+                                              id="batch--delete-asset"
+                                              style="display: none"
+                                            >
+                                              <i class="fas fa-trash"></i>
+                                            </button>
+                                            <div class="float-right">
+                                              1-50
+                                              <div class="btn-group">
+                                                <button
+                                                  type="button"
+                                                  class="btn btn-default btn-sm"
+                                                >
+                                                  <i
+                                                    class="fas fa-chevron-left"
+                                                  ></i>
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  class="btn btn-default btn-sm"
+                                                >
+                                                  <i
+                                                    class="fas fa-chevron-right"
+                                                  ></i>
+                                                </button>
+                                              </div>
+                                              <!-- /.btn-group -->
+                                            </div>
+                                            <!-- /.float-right -->
+                                          </div>
+                                          <div
+                                            class="table-responsive mailbox-messages"
+                                            style="max-width: 100%"
+                                          >
+                                            <table
+                                              class="table table-bordered table-striped"
+                                              style="max-width: 100%"
+                                              id="warehouse-list-table"
+                                            >
+                                              <thead>
+                                                <tr>
+                                                  <th scope="col">
+                                                    <input
+                                                      type="checkbox"
+                                                      value=""
+                                                      id="warehouse-check-box"
+                                                    />
+                                                    <label for="check1"></label>
+                                                  </th>
+                                                  <th scope="col">ID</th>
+                                                  <th scope="col">Count</th>
+                                                  <th scope="col">Price</th>
+                                                  <th scope="col">status</th>
+                                                  <th scope="col"></th>
+                                                </tr>
+                                              </thead>
+                                              <tbody id="warehouse-list"></tbody>
+                                            </table>
+    
+                                          </div>
+                                        </div>
+                                        <div class="tab-pane" id="status">
+                                          <table
+                                              class="table table-bordered table-striped"
+                                              style="max-width: 100%"
+                                              id="warehouse-list-status-table"
+                                            >
+                                              
+                                            </table>
+                                        </div>
                                       </div>
+                                      
 
                                       <!-- /.mail-box-messages -->
                                     </div>

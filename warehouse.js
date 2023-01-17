@@ -22,6 +22,9 @@ const setChickenForSaleURL = `${HOST}/${setChickenForSale}`;
 const changeAssetStatusURL = `${HOST}/${changeStatus}`;
 
 const warehouseTableList = document.getElementById("warehouse-list-table");
+const warehouseTableStatusList = document.getElementById(
+  "warehouse-list-status-table"
+);
 const modalBody = document.getElementById("modal-body");
 const modalTitle = document.getElementsByClassName("modal-title")[0];
 const save = document.getElementById("save");
@@ -100,7 +103,6 @@ const getAllAssets = async () => {
   const data = await res.json();
 
   let colorizedData = giveStatusColor(data);
-  console.log(colorizedData);
 
   return colorizedData.result;
 };
@@ -330,6 +332,7 @@ const setChickenForSaleReq = (assId, price) => {
 
         warehouseTableList.innerHTML = "";
         getAllWarehouseAsset(assetData);
+        setStatusTable(assetData);
 
         card.insertAdjacentHTML(
           "beforebegin",
@@ -504,6 +507,43 @@ const getAllWarehouseAsset = (data = []) => {
   });
 };
 
+const setStatusTable = (data = []) => {
+  warehouseTableStatusList.innerHTML = "";
+  warehouseTableStatusList.insertAdjacentHTML(
+    "beforeend",
+    `
+  <thead>
+  <tr>
+  <th scope="col">Serial No.</th>
+  <th scope="col">Owner</th>
+  <th scope="col">Buyer</th>
+  <th scope="col">status</th>
+  </tr>
+</thead>
+<tbody id="warehouse-list-status"></tbody>
+  `
+  );
+
+  const warehouseListStatus = document.getElementById("warehouse-list-status");
+
+  data.forEach((asset, index) =>
+    warehouseListStatus.insertAdjacentHTML(
+      "beforeend",
+      `
+  <tr>
+      <td>${asset.SerialNumber}</td>
+      <td>${asset.owner} </td>
+      <td>${asset.buyer}</td>
+      <td>
+        <span class="badge ${asset.statusColor}">${asset.status}</span>
+      </td>
+  </tr>
+
+  `
+    )
+  );
+};
+
 function openEditModal(assId) {
   assetId = assId;
 }
@@ -591,4 +631,5 @@ window.addEventListener("load", async () => {
   const info = await getAllAssets();
   assetData = info;
   getAllWarehouseAsset(info);
+  setStatusTable(info);
 });
