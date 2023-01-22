@@ -177,6 +177,11 @@ const finalProduct = {
   color: "badge-success",
 };
 
+const deliverd = {
+  name: "deliverd",
+  color: "badge-success",
+};
+
 const roles = {
   retailer: "Retailer",
   wholeSaler: "wholeSaler",
@@ -228,6 +233,10 @@ const AssetStatus = [
   {
     name: finalProduct.name,
     color: finalProduct.color,
+  },
+  {
+    name: deliverd.name,
+    color: deliverd.color,
   },
 ];
 
@@ -2067,7 +2076,7 @@ const setModalonEditDelivery = () => {
     selectStatus.insertAdjacentHTML(
       "beforeend",
       `
-    <option class="${finalProduct.color}" value="${finalProduct.name}">${finalProduct.name}</option>
+    <option class="${deliverd.color}" value="${deliverd.name}">${deliverd.name}</option>
     `
     );
   }
@@ -2246,7 +2255,7 @@ const setTableRowsForBuyerAsset = (data = []) => {
     `
     );
 
-    if (asset.status == finalProduct.name) {
+    if (asset.status == deliverd.name) {
       var confirmBtnRowTable = document.getElementById(`confirm-btn-${index}`);
       confirmBtnRowTable.insertAdjacentHTML(
         "beforeend",
