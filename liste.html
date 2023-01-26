@@ -150,7 +150,64 @@
             </a>
           </li>
           <!-- shopping cart -->
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+              <iconify-icon icon="logos:metamask-icon"></iconify-icon>
+            </a>
+            <div
+              id="connect-metamask-section"
+              class="dropdown-menu dropdown-menu-lg dropdown-menu-right border border-danger"
+            >
+              <a href="#" class="dropdown-item">
+                <!-- Message Start -->
+                <div class="media">
+                  <div class="media-body">
+                    <h3
+                      class="dropdown-item-title"
+                      style="margin: 20px 0px 50px 87px !important"
+                    >
+                      MetaMask
+                      <span
+                        class="float-center text-m text-primary"
+                        id="inventory-sidebar"
+                      ></span>
+                    </h3>
+                  </div>
+                </div>
+              </a>
+              <a href="#" class="dropdown-item">
+                <!-- Message Start -->
+                <div class="media">
+                  <div class="media-body">
+                    <div class="container">
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <p class="text text-primary" id="wallet-address"></p>
+                      </div>
+                      <div class="col-xs-12">
+                        <p class="text tex-primary" id="wallet-balance"></p>
+                      </div>
 
+                    </div>
+                  </div>
+
+                    <button
+                      class="btn btn-info"
+                      type="submit"
+                      id="metamask-connect-btn"
+                      style="padding: 12px 100px 12px 100px !important"
+                    >
+                      conect
+                      <span
+                        class="float-center text-m text-primary"
+                        id="inventory-sidebar"
+                      ></span>
+                    </button>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </li>
           <!-- Messages Dropdown Menu -->
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
@@ -294,7 +351,7 @@
           <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
               <img
-                src="./dist/img/AdminLTELogo.png"
+                src="./dist/img/photo_5940350258028592186_m.jpg"
                 style="width: 2.8rem"
                 class="img-circle elevation-2"
                 alt="User Image"
@@ -361,35 +418,40 @@
                   </li>
                 </ul>
               </li>
-
-              <li class="nav-item" id="list-section" style="display: none">
-                <a href="./liste.html" class="nav-link active">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>List</p>
-                </a>
-              </li>
-              <li
-                class="nav-item"
-                id="production-section"
-                style="display: none"
-              >
-                <a href="./index11.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Production</p>
-                </a>
-              </li>
-              <li class="nav-item" id="warehouse-section" style="display: none">
-                <a href="./Warehouse.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Warehouse</p>
-                </a>
-              </li>
-              <li class="nav-item" id="shop-section" style="display: none">
-                <a href="./index22.html" class="nav-link" id="shop-section">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Shop</p>
-                </a>
-              </li>
+              <div id="nav">
+                <li class="nav-item" id="list-section" style="display: none">
+                  <a href="./liste.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>List</p>
+                  </a>
+                </li>
+                <li
+                  class="nav-item"
+                  id="production-section"
+                  style="display: none"
+                >
+                  <a href="./index11.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Production</p>
+                  </a>
+                </li>
+                <li
+                  class="nav-item"
+                  id="warehouse-section"
+                  style="display: none"
+                >
+                  <a href="./Warehouse.html" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Warehouse</p>
+                  </a>
+                </li>
+                <li class="nav-item" id="shop-section" style="display: none">
+                  <a href="./index22.html" class="nav-link" id="shop-section">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Shop</p>
+                  </a>
+                </li>
+              </div>
             </ul>
           </nav>
           <!-- /.sidebar-menu -->
@@ -773,6 +835,17 @@
           }
         });
       });
+      const navMenu = document.getElementById("nav");
+      const navItems = navMenu.getElementsByClassName("nav-link");
+
+      for (var i = 0; i < navItems.length; i++) {
+        navItems[i].addEventListener("click", function () {
+          var current = document.getElementsByClassName("active");
+          current[0].className = current[0].className.replace("active", "");
+          this.className += "active";
+        });
+      }
     </script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.2/iconify-icon.min.js"></script>
   </body>
 </html>

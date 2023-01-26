@@ -41,6 +41,9 @@ const penBtn = document.querySelectorAll(".body--pencil");
 const infoBtn = document.querySelectorAll(".body--info");
 const plusBtn = document.querySelectorAll(".body--plus");
 
+const metaMaskSection = document.getElementById("connect-metamask-section");
+const metaMaskBtn = document.getElementById("metamask-connect-btn");
+
 const HOST = "http://116.203.61.236:4000";
 
 const getAssetByOwner = "channels/mychannel/chaincodes/chaincode/assets/owner";
@@ -2412,6 +2415,23 @@ async function setTheTable(userRole) {
     setBatchIdDropDown(info);
   }
 }
+
+let account;
+metaMaskBtn.addEventListener("click", (e) => {
+  ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
+    account = accounts[0];
+
+    console.log(account);
+
+    ethereum
+      .request({ method: "eth_getBalance", params: [account, "latest"] })
+      .then((result) => {
+        let wei = parseInt(result, 16);
+        let balance = wei / 10 ** 18;
+        console.log(balance + "ETH");
+      });
+  });
+});
 
 window.addEventListener("load", async () => {
   getToken();
