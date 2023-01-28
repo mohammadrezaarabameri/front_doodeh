@@ -299,6 +299,11 @@ const setChickenForSaleReq = (assId, price) => {
       }
     })
     .then((data) => {
+
+      if ($("#modal-default").hasClass("show")) {
+        $("#modal-default").modal("toggle");
+      }
+
       if (card.getElementsByClassName("alert").length !== 0) {
         alerts = card.getElementsByClassName("alert");
         for (let index = 0; index < alerts.length; index++) {
@@ -308,9 +313,8 @@ const setChickenForSaleReq = (assId, price) => {
 
       // TODO: change required
       if (data.result === null || data.success == false) {
-        if ($("#modal-default").hasClass("show")) {
-          $("#modal-default").modal("toggle");
-        }
+
+        
 
         card.insertAdjacentHTML(
           "beforebegin",
@@ -345,6 +349,9 @@ const setChickenForSaleReq = (assId, price) => {
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
       }
+
+      
+
     });
 };
 
@@ -411,19 +418,9 @@ const getAllWarehouseAsset = (data = []) => {
 
   // if is not required -> just in case of any mess
   if (data.length > 0) {
-    if (data[0].owner == batchWarehouse) {
       data = data.filter(
-        (item) =>
-          filterStatus.some((val) => val == item.status.toLowerCase()) &&
-          item.type.toLowerCase() === itemTypeFilter
-      );
-    } else {
-      data = data.filter(
-        (item) =>
-          filterStatus.some((val) => val == item.status.toLowerCase()) &&
-          item.type.toLowerCase() === typeFilter
-      );
-    }
+        (item) => item.status.toLowerCase() == statusFilter || item.status.toLowerCase() == readyToSale.name.toLowerCase() 
+      ); 
   }
   // data = data.filter(
   //   (item) =>
@@ -508,6 +505,12 @@ const getAllWarehouseAsset = (data = []) => {
 };
 
 const setStatusTable = (data = []) => {
+  const statusFilter = "warehouse";
+  if (data.length > 0) {
+    data = data.filter(
+      (item) => item.status.toLowerCase() !== statusFilter && item.status.toLowerCase() !== readyToSale.name.toLowerCase()
+    ); 
+}
   warehouseTableStatusList.innerHTML = "";
   warehouseTableStatusList.insertAdjacentHTML(
     "beforeend",

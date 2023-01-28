@@ -265,7 +265,7 @@ const sellChickenToCustomer = (idx, customer) => {
       if (data.result?.message.toLowerCase().includes("successful")) {
         confirmBtn.innerHTML = "";
         confirmBtn.innerText = "Confirmed";
-        confirmBtn.setAttribute("disbaled", true);
+        confirmBtn.setAttribute("disabled", true);
 
         containerfluid.insertAdjacentHTML(
           "afterbegin",

@@ -150,7 +150,11 @@
             </a>
           </li>
           <!-- shopping cart -->
-          <li class="nav-item dropdown">
+          <li
+            class="nav-item dropdown"
+            id="metamask-dropdown"
+            style="display: none"
+          >
             <a class="nav-link" data-toggle="dropdown" href="#">
               <iconify-icon icon="logos:metamask-icon"></iconify-icon>
             </a>
@@ -158,39 +162,42 @@
               id="connect-metamask-section"
               class="dropdown-menu dropdown-menu-lg dropdown-menu-right border border-danger"
             >
-              <a href="#" class="dropdown-item">
+              <a href="#" class="dropdown-item metamask-dropdown-items">
                 <!-- Message Start -->
                 <div class="media">
                   <div class="media-body">
-                    <h3
-                      class="dropdown-item-title"
-                      style="margin: 20px 0px 50px 87px !important"
-                    >
+                    <h3 class="dropdown-item-title mt-1 mb-3">
                       MetaMask
                       <span
                         class="float-center text-m text-primary"
                         id="inventory-sidebar"
                       ></span>
                     </h3>
+                    <div class="container align-center">
+                      <div class="row">
+                        <div class="col-xs-12">
+                          <label>Wallet Address:</label>
+                          <p
+                            class="text text-primary ml-2"
+                            id="wallet-address"
+                          ></p>
+                        </div>
+                        <div class="col-xs-12">
+                          <label>Balance:</label>
+                          <p
+                            class="text tex-primary ml-2"
+                            id="wallet-balance"
+                          ></p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </a>
-              <a href="#" class="dropdown-item">
+              <a href="#" class="dropdown-item metamask-dropdown-items">
                 <!-- Message Start -->
                 <div class="media">
                   <div class="media-body">
-                    <div class="container">
-                    <div class="row">
-                      <div class="col-xs-12">
-                        <p class="text text-primary" id="wallet-address"></p>
-                      </div>
-                      <div class="col-xs-12">
-                        <p class="text tex-primary" id="wallet-balance"></p>
-                      </div>
-
-                    </div>
-                  </div>
-
                     <button
                       class="btn btn-info"
                       type="submit"
@@ -796,6 +803,7 @@
     <script src="dist/js/adminlte.min.js"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="project/table design/source/js/app.js"></script>
+    <script src="./activatePage.js"></script>
     <!-- Page specific script -->
     <script>
       $(function () {
@@ -835,16 +843,22 @@
           }
         });
       });
-      const navMenu = document.getElementById("nav");
-      const navItems = navMenu.getElementsByClassName("nav-link");
+      // const navMenu = document.getElementById("nav");
+      // const navItems = navMenu.getElementsByClassName("nav-link");
+      // console.log(navItems[0].getAttribute('href'))
 
-      for (var i = 0; i < navItems.length; i++) {
-        navItems[i].addEventListener("click", function () {
-          var current = document.getElementsByClassName("active");
-          current[0].className = current[0].className.replace("active", "");
-          this.className += "active";
-        });
-      }
+      // for (var i = 0; i < navItems.length; i++) {
+      //   navItems[i].addEventListener("click", function () {
+      //     localStorage.setItem('activePage', navItems[i].getAttribute('href'))
+      //     // console.log(navItems[i]);
+      //     // var current = document.getElementsByClassName("active");
+      //     // current[0].classList.remove("active");
+
+      //     // current[0].className = current[0].className.replace("active", "");
+      //     // navItems[i].classList.add("acive");
+      //     // this.className += "active";
+      //   });
+      // }
     </script>
     <script src="https://code.iconify.design/iconify-icon/1.0.2/iconify-icon.min.js"></script>
   </body>

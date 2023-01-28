@@ -41,8 +41,19 @@ const penBtn = document.querySelectorAll(".body--pencil");
 const infoBtn = document.querySelectorAll(".body--info");
 const plusBtn = document.querySelectorAll(".body--plus");
 
+// meta mask
 const metaMaskSection = document.getElementById("connect-metamask-section");
 const metaMaskBtn = document.getElementById("metamask-connect-btn");
+const walletAddr = document.getElementById("wallet-address");
+const walletBalance = document.getElementById("wallet-balance");
+
+const metaMaskDropdownSection = document.getElementById('metamask-dropdown')
+const metaMaskdropdownItems = document.getElementsByClassName("metamask-dropdown-items");
+
+for (let i = 0; i < metaMaskdropdownItems.length; i++) {
+  metaMaskdropdownItems[i].addEventListener("click", (e) => e.stopPropagation());
+}
+
 
 const HOST = "http://116.203.61.236:4000";
 
@@ -1810,6 +1821,7 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             currUserRole = roles.customer;
+            metaMaskDropdownSection.style.display = 'flex'
             return;
         }
       }
@@ -2177,14 +2189,16 @@ const getBuyerPaidAsset = async () => {
   return colorizedData.result;
 };
 
-const confirmReceived = (idx, recvBtnId) => {
-  confirmBuyerBtn = document.getElementById(recvBtnId);
-  confirmBuyerBtn.innerHTML = `
-      <div class="d-flex justify-content-center">
-      <div class="spinner-border" role="status">
-      </div>
-    </div>
-  `;
+const confirmReceived = (idx) => {
+  // set loading
+  // confirmBuyerBtn = document.getElementById(recvBtnId);
+  // confirmBuyerBtn.innerHTML = `
+  //     <div class="d-flex justify-content-center">
+  //     <div class="spinner-border" role="status">
+  //     </div>
+  //   </div>
+  // `;
+
   const data = {
     id: idx,
   };
@@ -2263,7 +2277,7 @@ const setTableRowsForBuyerAsset = (data = []) => {
       confirmBtnRowTable.insertAdjacentHTML(
         "beforeend",
         `
-            <a class='btn btn-secondary btn-sm' id='confirm-${index}' onclick="confirmReceived('${asset.id}', 'confirm-${index}')">Received</a>
+            <a class='btn btn-secondary btn-sm' id='confirm-${index}' onclick="transferToken(${asset.price}, '${asset.id}','confirm-${index}')">Received</a>
         `
       );
     }
@@ -2416,22 +2430,105 @@ async function setTheTable(userRole) {
   }
 }
 
+// connect to metamask wallet
 let account;
 metaMaskBtn.addEventListener("click", (e) => {
+  e.preventDefault();
   ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
     account = accounts[0];
-
-    console.log(account);
+    walletAddr.textContent =
+      account.substring(0, 10) +
+      "..." +
+      account.substring(account.length - 10, account.length - 1);
+    // console.log(account);
 
     ethereum
       .request({ method: "eth_getBalance", params: [account, "latest"] })
       .then((result) => {
         let wei = parseInt(result, 16);
         let balance = wei / 10 ** 18;
-        console.log(balance + "ETH");
+        walletBalance.textContent = String(balance).substring(0, 5) + " ETH";
+        // console.log(balance + "ETH");
       });
   });
+  metaMaskBtn.setAttribute("disabled", true);
+  metaMaskBtn.textContent = "connected";
 });
+
+// todo: const transferToken(value, idx, recvBtnId, to) -> pass to dynamically
+const transferToken = (value, idx, recvBtnId) => {
+  const to = "0xB93a5aeE6dE7FD76008203000399FbDaf84AEB25";
+  // set loading
+  confirmBuyerBtn = document.getElementById(recvBtnId);
+  confirmBuyerBtn.innerHTML = `
+      <div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+      </div>
+    </div>
+  `;
+  console.log(value);
+  value = Number(value);
+  value = value * Math.pow(10, 18);
+  value = value.toString(16);
+  let transactionParam = {
+    to: to,
+    from: account,
+    value: value,
+  };
+
+  function checkTransactionconfirmation(txhash) {
+    let checkTransactionLoop = () => {
+      return ethereum
+        .request({ method: "eth_getTransactionReceipt", params: [txhash] })
+        .then((r) => {
+          if (r != null) return "confirmed";
+          else return checkTransactionLoop();
+        });
+    };
+    return checkTransactionLoop();
+  }
+
+  ethereum
+    .request({ method: "eth_sendTransaction", params: [transactionParam] })
+    .then((txhash) => {
+      console.log(txhash);
+
+      checkTransactionconfirmation(txhash).then((r) => {
+        console.log(r);
+        if (r == "confirmed") {
+          card.insertAdjacentHTML(
+            "beforebegin",
+            `
+        <div class="alert alert-success" role="alert" id='alert-2'>
+                Token SuccessFully Delivered; 
+        </div>
+        `
+          );
+          let alert2 = document.getElementById("alert-2");
+          setTimeout(() => alert2.remove(), 3000);
+
+          confirmReceived(idx);
+        } else {
+          card.insertAdjacentHTML(
+            "beforebegin",
+            `
+        <div class="alert alert-danger" role="alert" id='alert-2'>
+                Transaction Failed: ${r} 
+        </div>
+        `
+          );
+          let alert2 = document.getElementById("alert-2");
+          setTimeout(() => alert2.remove(), 3000);
+        }
+        confirmBuyerBtn.innerHTML = "Received";
+      });
+    });
+};
+
+// metaMaskSection.addEventListener("click", (e1) => {
+
+// });
+
 
 window.addEventListener("load", async () => {
   getToken();
