@@ -27,6 +27,13 @@
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
   <link rel="stylesheet" href="project/shop.css">
+  <style>
+
+      #nav > .nav-item > .active {
+        background-color: #25afba !important;
+      }
+
+  </style>
 
   <!-- <link rel="stylesheet" href="get/test/styles/app.css"> -->
 
@@ -317,49 +324,10 @@
             role="menu"
             data-accordion="false"
           >
+          <div id="nav">
             <!-- Add icons to the links using the .nav-icon class
                    with font-awesome or any other icon font library -->
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-copy"></i>
-                <p>
-                  Dashboard
-                  <i class="fas fa-angle-left right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li
-                  class="nav-item"
-                  id="request-section"
-                  style="display: none"
-                >
-                  <a href="dashboard.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Requests</p>
-                  </a>
-                </li>
-                <li
-                  class="nav-item"
-                  id="add-money-section"
-                  style="display: none"
-                >
-                  <a href="dashboard.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Add Money</p>
-                  </a>
-                </li>
-                <li
-                  class="nav-item"
-                  id="history-section"
-                  style="display: none"
-                >
-                  <a href="dashboard.html" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>History of purchases</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
+ 
 
             <li class="nav-item" id="list-section" style="display: none">
               <a href="./liste.html" class="nav-link active">
@@ -389,6 +357,40 @@
                 <p>Shop</p>
               </a>
             </li>
+            <li
+            class="nav-item"
+            id="request-section"
+            style="display: none"
+          >
+            <a href="dashboard.html" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Requests</p>
+            </a>
+          </li>
+          <li
+            class="nav-item"
+            id="add-money-section"
+            style="display: none"
+          >
+            <a href="dashboard.html" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Add Money</p>
+            </a>
+          </li>
+          <li
+            class="nav-item"
+            id="history-section"
+            style="display: none"
+          >
+            <a href="dashboard.html" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>History of purchases</p>
+            </a>
+          </li>
+          </div>
+        </ul>
+      </li>
+          </div>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -466,6 +468,7 @@
               <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
               <script src="dist/js/pages/dashboard.js"></script>
     <script src="./app.js"></script>
+    <script src="./activatePage.js"></script>
 
 </body>
 </html>

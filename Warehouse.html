@@ -154,7 +154,71 @@
             </a>
           </li>
           <!-- shopping cart -->
-
+          <li
+          class="nav-item dropdown"
+          id="metamask-dropdown"
+          style="display: none"
+        >
+          <a class="nav-link" data-toggle="dropdown" href="#">
+            <iconify-icon icon="logos:metamask-icon"></iconify-icon>
+          </a>
+          <div
+            id="connect-metamask-section"
+            class="dropdown-menu dropdown-menu-lg dropdown-menu-right border border-danger"
+          >
+            <a href="#" class="dropdown-item metamask-dropdown-items">
+              <!-- Message Start -->
+              <div class="media">
+                <div class="media-body">
+                  <h3 class="dropdown-item-title mt-1 mb-3">
+                    MetaMask
+                    <span
+                      class="float-center text-m text-primary"
+                      id="inventory-sidebar"
+                    ></span>
+                  </h3>
+                  <div class="container align-center">
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <label>Wallet Address:</label>
+                        <p
+                          class="text text-primary ml-2"
+                          id="wallet-address"
+                        ></p>
+                      </div>
+                      <div class="col-xs-12">
+                        <label>Balance:</label>
+                        <p
+                          class="text tex-primary ml-2"
+                          id="wallet-balance"
+                        ></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+            <a href="#" class="dropdown-item metamask-dropdown-items">
+              <!-- Message Start -->
+              <div class="media">
+                <div class="media-body">
+                  <button
+                    class="btn btn-info"
+                    type="submit"
+                    id="metamask-connect-btn"
+                    style="padding: 12px 100px 12px 100px !important"
+                  >
+                    conect
+                    <span
+                      class="float-center text-m text-primary"
+                      id="inventory-sidebar"
+                    ></span>
+                  </button>
+                </div>
+              </div>
+            </a>
+          </div>
+        </li>
           <!-- Messages Dropdown Menu -->
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
@@ -322,49 +386,12 @@
               role="menu"
               data-accordion="false"
             >
+            <div id="nav">
+
               <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-copy"></i>
-                  <p>
-                    Dashboard
-                    <i class="fas fa-angle-left right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li
-                    class="nav-item"
-                    id="request-section"
-                    style="display: none"
-                  >
-                    <a href="dashboard.html" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Requests</p>
-                    </a>
-                  </li>
-                  <li
-                    class="nav-item"
-                    id="add-money-section"
-                    style="display: none"
-                  >
-                    <a href="dashboard.html" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>Add Money</p>
-                    </a>
-                  </li>
-                  <li
-                    class="nav-item"
-                    id="history-section"
-                    style="display: none"
-                  >
-                    <a href="dashboard.html" class="nav-link">
-                      <i class="far fa-circle nav-icon"></i>
-                      <p>History of purchases</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+
+
 
               <li class="nav-item" id="list-section" style="display: none">
                 <a href="./liste.html" class="nav-link active">
@@ -394,6 +421,37 @@
                   <p>Shop</p>
                 </a>
               </li>
+              <li
+              class="nav-item"
+              id="request-section"
+              style="display: none"
+            >
+              <a href="dashboard.html" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Requests</p>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              id="add-money-section"
+              style="display: none"
+            >
+              <a href="dashboard.html" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Add Money</p>
+              </a>
+            </li>
+            <li
+              class="nav-item"
+              id="history-section"
+              style="display: none"
+            >
+              <a href="dashboard.html" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>History of purchases</p>
+              </a>
+            </li>
+            </div>
             </ul>
           </nav>
           <!-- /.sidebar-menu -->
@@ -689,5 +747,7 @@
         });
       });
     </script>
+        <script src="https://code.iconify.design/iconify-icon/1.0.2/iconify-icon.min.js"></script>
+        <script src="./activatePage.js"></script>
   </body>
 </html>

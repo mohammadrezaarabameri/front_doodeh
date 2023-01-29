@@ -30,6 +30,23 @@ const modalTitle = document.getElementsByClassName("modal-title")[0];
 const save = document.getElementById("save");
 const card = document.getElementsByClassName("content")[0];
 
+// meta mask
+const metaMaskSection = document.getElementById("connect-metamask-section");
+const metaMaskBtn = document.getElementById("metamask-connect-btn");
+const walletAddr = document.getElementById("wallet-address");
+const walletBalance = document.getElementById("wallet-balance");
+
+const metaMaskDropdownSection = document.getElementById("metamask-dropdown");
+const metaMaskdropdownItems = document.getElementsByClassName(
+  "metamask-dropdown-items"
+);
+
+for (let i = 0; i < metaMaskdropdownItems.length; i++) {
+  metaMaskdropdownItems[i].addEventListener("click", (e) =>
+    e.stopPropagation()
+  );
+}
+
 // sidebar buttons
 const productionSection = document.getElementById("production-section");
 const warehouseSection = document.getElementById("warehouse-section");
@@ -299,7 +316,6 @@ const setChickenForSaleReq = (assId, price) => {
       }
     })
     .then((data) => {
-
       if ($("#modal-default").hasClass("show")) {
         $("#modal-default").modal("toggle");
       }
@@ -313,9 +329,6 @@ const setChickenForSaleReq = (assId, price) => {
 
       // TODO: change required
       if (data.result === null || data.success == false) {
-
-        
-
         card.insertAdjacentHTML(
           "beforebegin",
           `
@@ -349,9 +362,6 @@ const setChickenForSaleReq = (assId, price) => {
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
       }
-
-      
-
     });
 };
 
@@ -418,9 +428,11 @@ const getAllWarehouseAsset = (data = []) => {
 
   // if is not required -> just in case of any mess
   if (data.length > 0) {
-      data = data.filter(
-        (item) => item.status.toLowerCase() == statusFilter || item.status.toLowerCase() == readyToSale.name.toLowerCase() 
-      ); 
+    data = data.filter(
+      (item) =>
+        item.status.toLowerCase() == statusFilter ||
+        item.status.toLowerCase() == readyToSale.name.toLowerCase()
+    );
   }
   // data = data.filter(
   //   (item) =>
@@ -508,9 +520,11 @@ const setStatusTable = (data = []) => {
   const statusFilter = "warehouse";
   if (data.length > 0) {
     data = data.filter(
-      (item) => item.status.toLowerCase() !== statusFilter && item.status.toLowerCase() !== readyToSale.name.toLowerCase()
-    ); 
-}
+      (item) =>
+        item.status.toLowerCase() !== statusFilter &&
+        item.status.toLowerCase() !== readyToSale.name.toLowerCase()
+    );
+  }
   warehouseTableStatusList.innerHTML = "";
   warehouseTableStatusList.insertAdjacentHTML(
     "beforeend",
@@ -573,19 +587,20 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
+        usernameSidebar.textContent = userRole.role;
         username = currUser;
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             return;
 
           case "Warehouse":
             shopSection.style.display = "block";
             warehouseSection.style.display = "block";
             requestSection.style.display = "block";
+            metaMaskDropdownSection.style.display = "flex";
             // window.location.replace("./Warehouse.html");
             return;
 
@@ -593,7 +608,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             return;
 
           case "Retailer":
@@ -601,7 +615,6 @@ const setRoleAccess = (currUser) => {
             shopSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             return;
         }
       }
@@ -622,12 +635,36 @@ const getToken = () => {
         // for all page
         inventorySidebar.textContent = data.result?.amount;
         blockedInvenory.textContent = data.result?.blockAmount;
-        usernameSidebar.textContent = carveOutUsername(data.result?.user);
+        // usernameSidebar.textContent = carveOutUsername(data.result?.user);
         setRoleAccess(data.result.user);
         //
       }
     });
 };
+
+let account;
+metaMaskBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  ethereum.request({ method: "eth_requestAccounts" }).then((accounts) => {
+    account = accounts[0];
+    walletAddr.textContent =
+      account.substring(0, 10) +
+      "..." +
+      account.substring(account.length - 10, account.length - 1);
+    // console.log(account);
+
+    ethereum
+      .request({ method: "eth_getBalance", params: [account, "latest"] })
+      .then((result) => {
+        let wei = parseInt(result, 16);
+        let balance = wei / 10 ** 18;
+        walletBalance.textContent = String(balance).substring(0, 5) + " ETH";
+        // console.log(balance + "ETH");
+      });
+  });
+  metaMaskBtn.setAttribute("disabled", true);
+  metaMaskBtn.textContent = "connected";
+});
 
 window.addEventListener("load", async () => {
   getToken();

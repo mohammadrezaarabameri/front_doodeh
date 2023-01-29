@@ -101,6 +101,9 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
+
+        usernameSidebar.textContent = userRole.role;
+
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
@@ -167,7 +170,7 @@ const getToken = () => {
         // for all page
         inventorySidebar.textContent = data.result?.amount;
         blockedInvenory.textContent = data.result?.blockAmount;
-        usernameSidebar.textContent = carveOutUsername(data.result?.user);
+        // usernameSidebar.textContent = carveOutUsername(data.result?.user);
         setRoleAccess(data.result.user);
       } else {
         profileCard.insertAdjacentHTML(

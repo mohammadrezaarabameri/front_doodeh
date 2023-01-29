@@ -161,7 +161,7 @@ const getToken = () => {
         // for all page
         inventorySidebar.textContent = data.result?.amount;
         blockedInvenory.textContent = data.result?.blockAmount;
-        usernameSidebar.textContent = carveOutUsername(data.result?.user);
+        // usernameSidebar.textContent = carveOutUsername(data.result?.user);
         setRoleAccess(data.result.user);
       } else {
         profileCard.insertAdjacentHTML(
@@ -659,13 +659,14 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
-        console.log(userRole.role);
+        usernameSidebar.textContent = userRole.role;
+        // console.log(userRole.role);
+
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             activityTabSection.style.display = "block";
             timelineTabSection.style.display = "block";
 
@@ -691,7 +692,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             activityTabSection.style.display = "block";
             timelineTabSection.style.display = "block";
 
@@ -708,7 +708,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             activityTabSection.style.display = "block";
             timelineTabSection.style.display = "block";
 
@@ -724,6 +723,7 @@ const setRoleAccess = (currUser) => {
           case "LocalDelivery":
             requestTabSection.style.display = "block";
             listSection.style.display = "block";
+            requestSection.style.display = 'block'
 
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
@@ -734,6 +734,7 @@ const setRoleAccess = (currUser) => {
           case "GlobalDelivery":
             requestTabSection.style.display = "block";
             listSection.style.display = "block";
+            requestSection.style.display = 'block'
 
             requestTabPanelSection.classList.add("active");
             requestTabSection.classList.add("active");
@@ -744,7 +745,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             timelineTabSection.style.display = "block";
             timelineTabSection.classList.add("active");
-            addMoneySection.style.display = "block";
             shopSection.style.display = "block";
             return;
         }
@@ -787,6 +787,15 @@ const setUserHistoryTable = () => {
       }
     });
 };
+
+
+const setSelectionModeInSidebarButtons = () => {
+  let pageName = localStorage.getItem('pageName');
+  
+  if (pageName == requestTabSection.textContent.trim()) { requestTabSection.classList.add('active') }
+  if (pageName == activityTabSection.textContent.trim()) {activityTabSection.classList.add('active')}
+  if (pageName == timelineTabSection.textContent.trim()) {timelineTabSection.classList.add('active')}
+}
 
 window.addEventListener("load", () => {
   getToken();

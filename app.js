@@ -47,6 +47,17 @@ const setActive = (e) => {
   console.log(e);
 };
 
+const roles = {
+  retailer: "Retailer",
+  wholeSaler: "wholeSaler",
+  warehouse: "Warehouse",
+  factory: "Factory",
+  localDelivery: "LocalDelivery",
+  globalDelivery: "GlobalDelivery",
+  customer: "Customer",
+};
+
+
 // TODO: add alert
 
 // place on bid button
@@ -285,12 +296,13 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
+        usernameSidebar.textContent = userRole.role;
+        
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             return;
 
           case "Warehouse":
@@ -304,7 +316,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             requestSection.style.display = "block";
             return;
 
@@ -312,7 +323,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             requestSection.style.display = "block";
             return;
           case "LocalDelivery":
@@ -348,7 +358,7 @@ const getToken = () => {
         // for all page
         inventorySidebar.textContent = data.result?.amount;
         blockedInvenory.textContent = data.result?.blockAmount;
-        usernameSidebar.textContent = carveOutUsername(data.result?.user);
+        // usernameSidebar.textContent = carveOutUsername(data.result?.user);
         setRoleAccess(data.result.user);
       } else {
         profileCard.insertAdjacentHTML(

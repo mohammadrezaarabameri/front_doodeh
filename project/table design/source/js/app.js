@@ -47,13 +47,16 @@ const metaMaskBtn = document.getElementById("metamask-connect-btn");
 const walletAddr = document.getElementById("wallet-address");
 const walletBalance = document.getElementById("wallet-balance");
 
-const metaMaskDropdownSection = document.getElementById('metamask-dropdown')
-const metaMaskdropdownItems = document.getElementsByClassName("metamask-dropdown-items");
+const metaMaskDropdownSection = document.getElementById("metamask-dropdown");
+const metaMaskdropdownItems = document.getElementsByClassName(
+  "metamask-dropdown-items"
+);
 
 for (let i = 0; i < metaMaskdropdownItems.length; i++) {
-  metaMaskdropdownItems[i].addEventListener("click", (e) => e.stopPropagation());
+  metaMaskdropdownItems[i].addEventListener("click", (e) =>
+    e.stopPropagation()
+  );
 }
-
 
 const HOST = "http://116.203.61.236:4000";
 
@@ -178,12 +181,12 @@ const localDelivery = {
 
 const globalDelivery = {
   name: "GlobalDelivery",
-  color: "badge-danger",
+  color: "badge-warning",
 };
 
 const readyToGlobalDelivery = {
   name: "readyToGlobalDelivery",
-  color: "badge-danger",
+  color: "badge-warning",
 };
 
 const finalProduct = {
@@ -755,9 +758,10 @@ const removeAssetFromBatch = (assetIDs = [], batchID) => {
 
         let batchIndex = userData.findIndex((obj) => obj.id === batchID);
         userData[batchIndex].childesCount = assetsOfBatch.length;
-
+        
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
+
       }
     });
 };
@@ -1441,7 +1445,8 @@ searchInput.addEventListener("keypress", async (e) => {
 });
 
 const carveOutPrice = (data = [], key) => {
-  let filteredData = data.filter((obj) => obj._id === key);
+  console.log(assets)
+  let filteredData = data.filter((obj) => obj.id === key);
   if (filteredData.length === 0) return 0;
   return filteredData[0].price;
 };
@@ -1591,7 +1596,7 @@ function getAllChickens(data = []) {
       </tr>
        `
     );
-    usernameSidebar.textContent = carveOutUsername(chicken.owner);
+    // usernameSidebar.textContent = carveOutUsername(chicken.owner);
   });
 }
 
@@ -1751,11 +1756,27 @@ const getToken = () => {
         // for all page
         inventorySidebar.textContent = data.result?.amount;
         blockedInvenory.textContent = data.result?.blockAmount;
-        usernameSidebar.textContent = carveOutUsername(data.result?.user);
         setRoleAccess(data.result.user);
       }
     });
 };
+
+// const getRole = () => {
+//   fetch(getUsersRoleURL, {
+//     method: "GET",
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//       "Content-Type": "application/json",
+//     },
+//   })
+//     .then((res) => res.json())
+//     .then((data) => {
+//       if (data.error !== "null") {
+//         // for all page
+//         usernameSidebar.textContent = carveOutUsername(data.message?.role);
+//       }
+//     });
+// };
 
 const setRoleAccess = (currUser) => {
   fetch(getUsersRoleURL, {
@@ -1769,13 +1790,15 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
+        
+        usernameSidebar.textContent = userRole.role;
+
         setTheTable(userRole.role);
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             currUserRole = roles.factory;
             return;
 
@@ -1785,13 +1808,13 @@ const setRoleAccess = (currUser) => {
             requestSection.style.display = "block";
             window.location.replace("./Warehouse.html");
             currUserRole = roles.warehouse;
+            metaMaskDropdownSection.style.display = "flex";
             return;
 
           case "Wholesaler":
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             requestSection.style.display = "block";
             currUserRole = roles.wholeSaler;
             return;
@@ -1800,7 +1823,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             requestSection.style.display = "block";
             currUserRole = roles.retailer;
             return;
@@ -1821,7 +1843,7 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             currUserRole = roles.customer;
-            metaMaskDropdownSection.style.display = 'flex'
+            metaMaskDropdownSection.style.display = "flex";
             return;
         }
       }
@@ -2031,6 +2053,7 @@ const getAssetsOfBatch = (batchId) => {
 };
 
 const setBatchIdDropDown = (data = []) => {
+  console.log(data)
   const batchType = "batch";
   data = data.filter(
     (item) =>
@@ -2398,6 +2421,7 @@ async function setTheTable(userRole) {
     const assetStatusForDelivery = await getAllAssetsForDelivery(type);
     assetDataDeliveryStatusForCompanies = assetStatusForDelivery;
     setItemTable(assetStatusForDelivery);
+
   } else if (userRole == roles.customer) {
     tabsSection.style.display = "flex";
     batchSection.textContent = "Receipt";
@@ -2424,6 +2448,7 @@ async function setTheTable(userRole) {
 
     const info = await getChickens();
     userData = info;
+    assets = info;
     getAllChickens(info);
     getAllBatches(info);
     setBatchIdDropDown(info);
@@ -2528,7 +2553,6 @@ const transferToken = (value, idx, recvBtnId) => {
 // metaMaskSection.addEventListener("click", (e1) => {
 
 // });
-
 
 window.addEventListener("load", async () => {
   getToken();
