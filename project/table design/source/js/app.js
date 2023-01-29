@@ -1458,7 +1458,6 @@ searchInput.addEventListener("keypress", async (e) => {
 });
 
 const carveOutPrice = (data = [], key) => {
-  console.log(assets)
   let filteredData = data.filter((obj) => obj.id === key);
   if (filteredData.length === 0) return 0;
   return filteredData[0].price;
@@ -1473,6 +1472,12 @@ const addAssetToList = (assetId) => {
 };
 
 const setItemTable = (data = []) => {
+
+  if (currUserRole === roles.globalDelivery) {
+    data = data.filter(item => item.status.toLowerCase() == deliverd.name.toLowerCase())
+  }
+  
+
   itemTable.innerHTML = "";
   itemTable.insertAdjacentHTML(
     "beforeend",
