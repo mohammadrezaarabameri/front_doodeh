@@ -15,8 +15,8 @@ for (var i = 0; i < navItems.length; i++) {
     
     navItems[i].setAttribute('onclick', `localStorage.setItem("pageIndex", ${i})`)
     navItems[i].setAttribute('page-index', i)
-    
-    if (carvoutNames( String(navItems[i].getAttribute('href')) ) == carvoutNames(currPath)) {
+    // console.log()
+    if ( currPath.includes(carvoutNames( String(navItems[i].getAttribute('href')) )) ) {
         if (!navItems[i].classList.contains('active') && navItems[i].getAttribute('page-index') == pageIndex)
         navItems[i].classList.add('active')
         localStorage.setItem('pageName', String(navItems[i].textContent).trim());

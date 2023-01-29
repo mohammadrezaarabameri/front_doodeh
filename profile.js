@@ -65,6 +65,10 @@ const listSection = document.getElementById("list-section");
 const addMoneySection = document.getElementById("add-money-section");
 const historySection = document.getElementById("history-section");
 
+const requestNavLink = document.querySelector('[href="#requests"]')
+const activityNavLink = document.querySelector('[href="#activity"]')
+const timelineNavLink = document.querySelector('[href="#timeline"]')
+
 const headers = {
   Authorization: `Bearer ${token}`,
   "Content-Type": "application/json",
@@ -672,6 +676,7 @@ const setRoleAccess = (currUser) => {
 
             activityTabPanelSection.classList.add("active");
             activityTabSection.classList.add("active");
+            activityNavLink.classList.add('active')
 
             return;
 
@@ -766,6 +771,7 @@ const setUserHistoryTable = () => {
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log(data)
       if (data.result.length > 0) {
         data.result.forEach((item, index) => {
           userHistoryTable.insertAdjacentHTML(
