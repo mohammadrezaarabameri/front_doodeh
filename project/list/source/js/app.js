@@ -151,7 +151,7 @@ const addBulk = (count) => {
             `
             
               <tr>
-                <th>${item.id}</th>
+                <th>${item.SerialNumber}</th>
                 <th>${item.owner}</th>
                 <th>1</th>
               </tr>
@@ -191,7 +191,7 @@ const addBatch = () => {
           `
             
               <tr>
-                <th>${data.result.body.id}</th>
+                <th>${data.result.body.SerialNumber}</th>
                 <th>${data.result.body.owner}</th>
                 <th>${data.result.body.childesCount}</th>
               </tr>

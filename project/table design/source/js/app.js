@@ -514,7 +514,9 @@ const changeStatusColorOnServer = (assetId, selectedVal, assetType = "") => {
         );
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
+
       } else if (assetType == "delivery") {
+
         if ($("#modal-default").hasClass("show")) {
           $("#modal-default").modal("toggle");
         }
@@ -1387,9 +1389,20 @@ save.addEventListener("click", (e) => {
     </div>
       `;
       let assetIndex = assetDataStatus.findIndex((obj) => obj.id === ChickenID);
+      
+      // set item table after change
+      assetDataStatus[assetIndex].status = selectedValDel;
+      assetDataDeliveryStatusForCompanies.push(assetDataStatus[assetIndex])
+      
+      
+      setItemTable(assetDataDeliveryStatusForCompanies)
+
+      // clear asset table from asset
       assetDataStatus.splice(assetIndex, 1);
+      
+
       changeStatusColorOnServer(ChickenID, selectedValDel, "delivery");
-      itemTable.innerHTML = "";
+      // itemTable.innerHTML = "";
       getDeliveryAssetsByStatus(assetDataStatus);
   }
 });
@@ -2403,7 +2416,7 @@ async function setTheTable(userRole) {
     // first tab
     batchSection.textContent = "Accepted";
     // second tab
-    itemSection.textContent = "Status";
+    itemSection.textContent = "Previous Assets";
 
     penBtn[0].style.display = "inline-block";
 
