@@ -1,20 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <meta http-equiv="X-UA-Compatible" content="ie=edge" /> -->
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://bootswatch.com/4/flatly/bootstrap.min.css"
-    />
-    <title>Product</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profile</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link
@@ -23,38 +12,11 @@
     />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" />
-    <!-- Ionicons -->
-    <link
-      rel="stylesheet"
-      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
-    />
-    <!-- Tempusdominus Bootstrap 4 -->
-    <link
-      rel="stylesheet"
-      href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css"
-    />
-    <!-- iCheck -->
-    <link
-      rel="stylesheet"
-      href="plugins/icheck-bootstrap/icheck-bootstrap.min.css"
-    />
-    <!-- JQVMap -->
-    <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css" />
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css" />
-    <!-- overlayScrollbars -->
-    <link
-      rel="stylesheet"
-      href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css"
-    />
-    <!-- Daterange picker -->
-    <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css" />
-    <!-- summernote -->
-    <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css" />
-    <link rel="stylesheet" href="project/list/source/content/app.css" />
+    <link rel="stylesheet" href="project/profile.css" />
   </head>
-
-  <body class="hold-transition sidebar-mini layout-fixed">
+  <body class="hold-transition sidebar-mini">
     <div class="wrapper">
       <!-- Navbar -->
       <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -69,7 +31,7 @@
             <a
               href="liste.html"
               class="nav-link"
-              style="color: #070707; font-size: larger"
+              style="color: #0c0c0c; font-size: larger"
               >MetaDeSC</a
             >
           </li>
@@ -397,143 +359,174 @@
         <!-- /.sidebar -->
       </aside>
 
+      <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
-        <div class="container mt-4">
-          <h1 class="display-4 text-center">
-            Create Asset
-            <span class="text-warning"></span>
-          </h1>
-          <section class="content">
-            <div class="container-fluid">
-              <div class="row">
-                <!-- /.col -->
-                <div class="col-md-12">
-                  <div class="card">
-                    <div class="card-header p-2">
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                      <div class="tab-content">
-                        <!-- /.tab-pane -->
-                          <!-- The requests -->
+        <!-- Content Header (Page header) -->
+        <section class="content-header"></section>
 
-                          <form id="book-form" class="form" autocomplete="off">
-                            <div class="container">
-                              <div class="flex-column-reverse d-flex align-items-center justify-content-center">
-                                <div class="col-sm-4 col-xs-12">
-                                  <div class="form-group" id="count--section">
-                                    <label for="batch-count" class="form-label"> Count </label>
-                                    <input
-                                      type="number"
-                                      id="batch--count"
-                                      class="form-control"
-                                    />
-                                  </div>
-                                </div>
-                                  <div class="col-sm-4 col-xs-12">
-                                  <div class="form-group">
-                                    <label> Type </label>
-                                    <select id="add-type-select" class="form-control" aria-label=".form-select-lg example">
-                                      <option value="emptyBatch" selected>Empty Batch</option>
-                                      <option value="fullBatch">Full Batch</option>
-                                      <option value="Bulk">Item</option>
-                                    </select>
-                                  </div>
-                                  
-                                </div>
-                                </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                            <div class="col-sm-4 col-xs-12">
-                              <button
-                                id="add-batch"
-                                type="submit"
-                                class="btn btn-warning1 btn-block"
-                              >
-                                Add Asset
-                              </button>
-                            </div>
-                            </div>
-                          </form>
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <!-- /.col -->
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header p-2">
+                    <ul class="nav nav-pills">
+                      <li
+                        class="nav-item"
+                        id="request-tab-section"
+                        style="display: none"
+                      >
+ 
+                      </li>
+                      <li
+                        class="nav-item"
+                        id="activity-tab-section"
+                        style="display: none"
+                      >
+                        <a class="nav-link" href="#activity" data-toggle="tab"
+                          >History of purchases</a
+                        >
+                      </li>
+                      <li class="nav-item" id="timeline-tab-section">
+                        <a
+                          class="nav-link active"
+                          href="#timeline"
+                          data-toggle="tab"
+                          >Add Money</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <div class="tab-content">
+                      <!-- /.tab-pane -->
+                      <div class="tab-pane" id="requests">
+                        <button
+                          class="btn-primary btn-md mb-1 ml-1"
+                          id="accept-all-request"
+                          style="display: none"
+                        >
+                          Accept
+                        </button>
+                        <!-- The requests -->
+
+                        <div class="container-fluid" id="confirm">
                           <div class="card">
-                            <!-- /.card-header -->
+                            <div
+                              class="card-body table-responsive"
+                              id="request-table"
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- /.tab-pane -->
+
+                      <div class="tab-pane" id="activity">
+                        <div class="container-fluid">
+                          <div class="card">
                             <div class="card-body table-responsive">
                               <table
-                                id="example1"
-                                class="table table-bordered table-striped"
-                                style="max-width: 100%;"
+                                class="table table-bordered"
+                                style="max-width: 100%"
                               >
                                 <thead>
-                                  <tr>
-                                    <th>Serial No.</th>
-                                    <th>Owner</th>
-                                    <th>Count</th>
+                                  <tr style="text-align: center">
+                                    <th style="width: 0.1rem"></th>
+                                    <th>ID</th>
+                                    <th>Step</th>
+                                    <th>Date</th>
+                                    <th>Detail</th>
                                   </tr>
                                 </thead>
-                                <tbody id="batch-list"></tbody>
+                                <tbody id="user-history-table"></tbody>
                               </table>
                             </div>
                           </div>
-                      
-                        <!-- /.tab-pane -->
+                        </div>
                       </div>
-                      <!-- /.tab-content -->
+                      <!-- /.tab-pane -->
+                      <div class="tab-pane show active" id="timeline">
+                        <!-- The timeline -->
+                        <div class="mb-3">
+                          <label for="Amount" class="form-label">Amount</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="amount"
+                            placeholder="example: 50"
+                          />
+                          <button
+                            class="btn btn-primary1 form-control mt-3"
+                            type="submit"
+                            id="add-money"
+                          >
+                            Add Money
+                          </button>
+                        </div>
+                      </div>
+                      <!-- /.tab-pane -->
+                      <!-- /.tab-pane -->
                     </div>
-                    <!-- /.card-body -->
+                    <!-- /.tab-content -->
                   </div>
-                  <!-- /.card -->
+                  <!-- /.card-body -->
                 </div>
-                <!-- /.col -->
+                <!-- /.card -->
               </div>
-              <!-- /.row -->
+              <!-- /.col -->
             </div>
-            <!-- /.container-fluid -->
-          </section>
-
-          <!-- jQuery -->
-          <script src="plugins/jquery/jquery.min.js"></script>
-          <!-- jQuery UI 1.11.4 -->
-          <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
-          <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-          <script>
-            $.widget.bridge("uibutton", $.ui.button);
-          </script>
-          <!-- Bootstrap 4 -->
-          <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-          <!-- ChartJS -->
-          <script src="plugins/chart.js/Chart.min.js"></script>
-          <!-- Sparkline -->
-          <script src="plugins/sparklines/sparkline.js"></script>
-          <!-- JQVMap -->
-          <script src="plugins/jqvmap/jquery.vmap.min.js"></script>
-          <script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
-          <!-- jQuery Knob Chart -->
-          <script src="plugins/jquery-knob/jquery.knob.min.js"></script>
-          <!-- daterangepicker -->
-          <script src="plugins/moment/moment.min.js"></script>
-          <script src="plugins/daterangepicker/daterangepicker.js"></script>
-          <!-- Tempusdominus Bootstrap 4 -->
-          <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-          <!-- Summernote -->
-          <script src="plugins/summernote/summernote-bs4.min.js"></script>
-          <!-- overlayScrollbars -->
-          <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-          <!-- AdminLTE App -->
-          <script src="dist/js/adminlte.js"></script>
-          <!-- AdminLTE for demo purposes -->
-          <!-- <script src="dist/js/demo.js"></script> -->
-          <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-          <script src="dist/js/pages/dashboard.js"></script>
-
-          <script src="project/list/source/js/app.js"></script>
-          <script src="./activatePage.js"></script>
-          <script>
-            
-          </script>
-        </div>
+            <!-- /.row -->
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
       </div>
+      <!-- /.content-wrapper -->
+      <footer class="main-footer">
+        <div class="float-right d-none d-sm-block">
+          <b></b>
+        </div>
+        <strong></strong>
+      </footer>
+
+      <!-- Control Sidebar -->
+      <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+      </aside>
+      <!-- /.control-sidebar -->
     </div>
+    <!-- ./wrapper -->
+
+    <!-- jQuery -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="dist/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="money.js"></script>
+    <script src="./activatePage.js"></script>
   </body>
 </html>
+
+<!-- <form>
+    <div class="form-group" id="timeline">
+      <label for="Amount" class="form-label">Amount</label>
+      <input
+        type="number"
+        class="form-control"
+        id="amount"
+        placeholder="example: 50"
+      />
+    </div>
+    <button
+      class="btn btn-primary1 form-control mt-3"
+      type="submit"
+      id="add-money"
+    >
+      Add Money
+    </button>
+    </form> -->

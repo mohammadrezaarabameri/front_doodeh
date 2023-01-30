@@ -514,9 +514,7 @@ const changeStatusColorOnServer = (assetId, selectedVal, assetType = "") => {
         );
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
-
       } else if (assetType == "delivery") {
-
         if ($("#modal-default").hasClass("show")) {
           $("#modal-default").modal("toggle");
         }
@@ -760,10 +758,9 @@ const removeAssetFromBatch = (assetIDs = [], batchID) => {
 
         let batchIndex = userData.findIndex((obj) => obj.id === batchID);
         userData[batchIndex].childesCount = assetsOfBatch.length;
-        
+
         let alert2 = document.getElementById("alert-2");
         setTimeout(() => alert2.remove(), 3000);
-
       }
     });
 };
@@ -1389,17 +1386,15 @@ save.addEventListener("click", (e) => {
     </div>
       `;
       let assetIndex = assetDataStatus.findIndex((obj) => obj.id === ChickenID);
-      
+
       // set item table after change
       assetDataStatus[assetIndex].status = selectedValDel;
-      assetDataDeliveryStatusForCompanies.push(assetDataStatus[assetIndex])
-      
-      
-      setItemTable(assetDataDeliveryStatusForCompanies)
+      assetDataDeliveryStatusForCompanies.push(assetDataStatus[assetIndex]);
+
+      setItemTable(assetDataDeliveryStatusForCompanies);
 
       // clear asset table from asset
       assetDataStatus.splice(assetIndex, 1);
-      
 
       changeStatusColorOnServer(ChickenID, selectedValDel, "delivery");
       // itemTable.innerHTML = "";
@@ -1472,11 +1467,11 @@ const addAssetToList = (assetId) => {
 };
 
 const setItemTable = (data = []) => {
-
   if (currUserRole === roles.globalDelivery) {
-    data = data.filter(item => item.status.toLowerCase() == deliverd.name.toLowerCase())
+    data = data.filter(
+      (item) => item.status.toLowerCase() == deliverd.name.toLowerCase()
+    );
   }
-  
 
   itemTable.innerHTML = "";
   itemTable.insertAdjacentHTML(
@@ -1808,7 +1803,7 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
-        
+
         usernameSidebar.textContent = userRole.role;
 
         setTheTable(userRole.role);
@@ -2071,7 +2066,7 @@ const getAssetsOfBatch = (batchId) => {
 };
 
 const setBatchIdDropDown = (data = []) => {
-  console.log(data)
+  console.log(data);
   const batchType = "batch";
   data = data.filter(
     (item) =>
@@ -2439,7 +2434,6 @@ async function setTheTable(userRole) {
     const assetStatusForDelivery = await getAllAssetsForDelivery(type);
     assetDataDeliveryStatusForCompanies = assetStatusForDelivery;
     setItemTable(assetStatusForDelivery);
-
   } else if (userRole == roles.customer) {
     tabsSection.style.display = "flex";
     batchSection.textContent = "Receipt";

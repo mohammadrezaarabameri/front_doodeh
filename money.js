@@ -32,7 +32,6 @@ const amount = document.getElementById("amount");
 const addMoneyBtn = document.getElementById("add-money");
 const token = localStorage.getItem("token");
 const addMoneyBox = document.getElementById("timeline");
-const requestContent = document.querySelector("#request-content");
 const userHistoryTable = document.getElementById("user-history-table");
 
 const inventoryAmount = document.getElementById("inventory");
@@ -44,16 +43,9 @@ const containerfluid = document.getElementById("confirm");
 const inventorySidebar = document.getElementById("inventory-sidebar");
 const usernameSidebar = document.getElementById("username-sidebar");
 
-const requestTable = document.getElementById("request-table");
+const timelineTabSection = document.getElementById("timeline-tab-section");
 
-const requestTabSection = document.getElementById("request-tab-section");
-const activityTabSection = document.getElementById("activity-tab-section");
-
-const requestTabPanelSection = document.getElementById("requests");
 const activityTabPanelSection = document.getElementById("activity");
-const timelineTabPanelSection = document.getElementById("requests");
-
-const acceptAllBtn = document.getElementById("accept-all-request");
 
 // sidebar buttons
 const productionSection = document.getElementById("production-section");
@@ -64,8 +56,6 @@ const listSection = document.getElementById("list-section");
 const addMoneySection = document.getElementById("add-money-section");
 const historySection = document.getElementById("history-section");
 
-const requestNavLink = document.querySelector('[href="#requests"]');
-const activityNavLink = document.querySelector('[href="#activity"]');
 const timelineNavLink = document.querySelector('[href="#timeline"]');
 
 const headers = {
@@ -114,7 +104,8 @@ const addMoney = (amount) => {
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.result.message === "Transacion successful.") {
+      console.log(data);
+      if (data.error === "null") {
         addMoneyBox.insertAdjacentHTML(
           "afterbegin",
           `
@@ -131,7 +122,7 @@ const addMoney = (amount) => {
         addMoneyBox.insertAdjacentHTML(
           "afterbegin",
           `
-            <div class="alert alert-danger" role="alert" id='alert-2'>
+            <div class="alert alert-success" role="alert" id='alert-2'>
                 ${data.result.message}
             </div>  
         `
@@ -336,76 +327,6 @@ const getSelectedCustomer = async (radio_name, asset_id) => {
 };
 
 // requests of warehouse
-const setRequests = async () => {
-  requestTable.insertAdjacentHTML(
-    "beforeend",
-    `
-  <table class="table table-bordered">
-  <thead>
-    <tr style="text-align: center;">
-      <th style="width: .1rem"></th>
-      <th>ID</th>
-      <th>Product</th>
-      <th>Base Price</th>
-      <th>Requests</th>
-      <th>Confirm</th>
-    </tr>
-  </thead>
-  <tbody class="table-content" id="request-content">
-  </tbody>
-</table>
-  `
-  );
-
-  let reqContent = document.getElementById("request-content");
-
-  let res = await fetch(getAssetURL, {
-    method: "GET",
-    headers: headers,
-  });
-
-  let data = await res.json();
-  let user = await getUser();
-
-  if (data.success) {
-    assetsData = data.message;
-    data.message.forEach((asset, index) => {
-      if (asset.asset.owner === user) {
-        reqContent.insertAdjacentHTML(
-          "beforeend",
-          `
-                    <tr style="text-align: center; font-size: 16px;">
-                        <td>${index + 1}</td>
-                        <td>${asset._id}</td>
-                        <td> ${asset.asset.type} </td>
-                        <td> ${asset.price} $</td>
-                        <td id="bid-${index}">
-                        </td>
-                        <td><button class="btn btn-primary1" id="bid-radio-${index}" onclick="getSelectedCustomer('bid-radio-${index}', '${
-            asset._id
-          }')">Confirm</button></td>
-                    </tr>
-                `
-        );
-
-        let bidIndex = document.getElementById(`bid-${index}`);
-        Object.keys(asset.bids).forEach((bid, j) => {
-          bidIndex.insertAdjacentHTML(
-            "beforeend",
-            `
-                    <div class="custom-control custom-radio">
-                        <input class="custom-control-input" value="${bid}" type="radio" id="bid-radio-${j}-${index}" name="bid-radio-${index}">
-                        <label for="bid-radio-${j}-${index}" class="custom-control-label">
-                            ${bid}- ${asset.bids[bid]}$
-                        </label>
-                    </div>
-                    `
-          );
-        });
-      }
-    });
-  }
-};
 
 // accept local delivert req
 const acceptLDReq = (acceptBtnId, idx) => {
@@ -504,151 +425,6 @@ const acceptGDReq = (acceptBtnId, idx) => {
 };
 
 // get local delivert req
-const getAssetsByStatusName = (name) => {
-  fetch(`${getAssetsByStatusURL}?status=${name}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => setRequestForLD(data.result));
-};
-
-// LD -> Local Delivery
-const setRequestForLD = (data = []) => {
-  acceptAllBtn.style.display = "block";
-  requestTable.insertAdjacentHTML(
-    "beforeend",
-    `
-  <table class="table table-bordered">
-  <thead>
-    <tr style="text-align: center;">
-    <th scope="col">
-        <input type="checkbox" value="" id="batch-check-box" onclick='selectAll()' />
-      </th>
-      <th>Serial No.</th>
-      <th>Owner</th>
-      <th>Buyer</th>
-      <th>Price</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody class="table-content" id="request-content">
-  </tbody>
-</table>
-  `
-  );
-
-  let reqContent = document.getElementById("request-content");
-
-  data.forEach((asset, index) =>
-    reqContent.insertAdjacentHTML(
-      "beforeend",
-      `
-        <tr style="text-align: center; font-size: 16px;">
-        <th scope="row">
-            <input type="checkbox" value="${index}" id="asset-checkbox">
-            <label for="check1"></label>
-        </th>
-        <td>${asset.SerialNumber}</td>
-        <td> ${asset.owner} </td>
-        <td> ${asset.buyer} $</td>
-        <td> ${asset.price}</td>
-        <td>
-        <button class="btn btn-primary1" id="accept-${index}" onclick="acceptLDReq('accept-${index}','${asset.id}' )">Accept</button>
-        </td>
-      </tr>
-
-  `
-    )
-  );
-};
-
-// get global delivert req
-const getAssetsByStatusNameG = (name) => {
-  fetch(`${getAssetsByStatusURL}?status=${name}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => setRequestForGD(data.result));
-};
-
-// GD -> Global Delivery
-const setRequestForGD = (data = []) => {
-  acceptAllBtn.style.display = "block";
-
-  requestTable.insertAdjacentHTML(
-    "beforeend",
-    `
-  <table class="table table-bordered">
-  <thead>
-    <tr style="text-align: center;">
-    <th scope="col">
-        <input type="checkbox" value="" id="batch-check-box" />
-        <label for="check1"></label>
-      </th>
-      <th>Serial No.</th>
-      <th>Owner</th>
-      <th>Buyer</th>
-      <th>Price</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody class="table-content" id="request-content">
-  </tbody>
-</table>
-  `
-  );
-
-  let reqContent = document.getElementById("request-content");
-
-  data.forEach((asset, index) =>
-    reqContent.insertAdjacentHTML(
-      "beforeend",
-      `
-        <tr style="text-align: center; font-size: 16px;">
-        <th scope="row">
-            <input type="checkbox" value="${index}" id="asset-checkbox">
-            <label for="check1"></label>
-        </th>
-        <td>${asset.SerialNumber}</td>
-        <td> ${asset.owner} </td>
-        <td> ${asset.buyer} $</td>
-        <td> ${asset.price}</td>
-        <td>
-        <button class="btn btn-primary1" id="accept-${index}" onclick="acceptGDReq('accept-${index}','${asset.id}' )">Accept</button>
-        </td>
-      </tr>
-
-  `
-    )
-  );
-};
-
-function selectAll() {
-  let btn = document.getElementById("batch-check-box");
-  if (btn.checked) {
-    var items = document.querySelectorAll('input[type="checkbox"]');
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].type == "checkbox") {
-        items[i].checked = true;
-      }
-    }
-  } else {
-    UnSelectAll();
-  }
-}
-
-function UnSelectAll() {
-  var items = document.querySelectorAll('input[type="checkbox"]');
-  for (var i = 0; i < items.length; i++) {
-    if (items[i].type == "checkbox") {
-      items[i].checked = false;
-    }
-  }
-}
 
 const setRoleAccess = (currUser) => {
   fetch(getUsersRoleURL, {
@@ -670,12 +446,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            activityTabSection.style.display = "block";
-            timelineTabSection.style.display = "block";
-
-            activityTabPanelSection.classList.add("active");
-            activityTabSection.classList.add("active");
-            activityNavLink.classList.add("active");
 
             return;
 
@@ -725,30 +495,21 @@ const setRoleAccess = (currUser) => {
             return;
 
           case "LocalDelivery":
-            requestTabSection.style.display = "block";
             listSection.style.display = "block";
             requestSection.style.display = "block";
 
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
-
-            getAssetsByStatusName(readyToLocalDelivery.name);
             return;
 
           case "GlobalDelivery":
-            requestTabSection.style.display = "block";
             listSection.style.display = "block";
             requestSection.style.display = "block";
 
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
             getAssetsByStatusNameG(readyToGlobalDelivery.name);
             return;
 
           case "Customer":
             listSection.style.display = "block";
             timelineTabSection.style.display = "block";
-            addMoneySection.style.display = "block";
             timelineTabSection.classList.add("active");
             shopSection.style.display = "block";
             return;
@@ -763,53 +524,8 @@ const formatUserHistoryDateField = (dateStr) => {
   return dateStr.substring(4, index - 1);
 };
 
-const setUserHistoryTable = () => {
-  fetch(getUserHistoryURL, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-      if (data.result.length > 0) {
-        data.result.forEach((item, index) => {
-          userHistoryTable.insertAdjacentHTML(
-            "beforeend",
-            `
-                <tr
-                style="text-align: center; font-size: 16px"
-              >
-                <td>${index + 1}</td>
-                <td>${item._id}</td>
-                <td>${item.tx}</td>
-                <td>${formatUserHistoryDateField(item.date)}</td>
-                <td></td>
-              </tr>
-
-          `
-          );
-        });
-      }
-    });
-};
-
-const setSelectionModeInSidebarButtons = () => {
-  let pageName = localStorage.getItem("pageName");
-
-  if (pageName == requestTabSection.textContent.trim()) {
-    requestTabSection.classList.add("active");
-  }
-  if (pageName == activityTabSection.textContent.trim()) {
-    activityTabSection.classList.add("active");
-  }
-  if (pageName == timelineTabSection.textContent.trim()) {
-    timelineTabSection.classList.add("active");
-  }
-};
-
 window.addEventListener("load", () => {
   getToken();
   // await setRequests();
-  setUserHistoryTable();
+  addMoney();
 });

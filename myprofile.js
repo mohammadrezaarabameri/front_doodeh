@@ -143,12 +143,6 @@ const addMoney = (amount) => {
     });
 };
 
-addMoneyBtn.addEventListener("click", (e) => {
-  let amountToAdd = Number(amount.value);
-  addMoney(amountToAdd);
-  amount.value = "";
-});
-
 const carveOutUsername = (username) => {
   return username.split("@")[1];
 };
@@ -335,297 +329,7 @@ const getSelectedCustomer = async (radio_name, asset_id) => {
   }
 };
 
-// requests of warehouse
-const setRequests = async () => {
-  requestTable.insertAdjacentHTML(
-    "beforeend",
-    `
-  <table class="table table-bordered">
-  <thead>
-    <tr style="text-align: center;">
-      <th style="width: .1rem"></th>
-      <th>ID</th>
-      <th>Product</th>
-      <th>Base Price</th>
-      <th>Requests</th>
-      <th>Confirm</th>
-    </tr>
-  </thead>
-  <tbody class="table-content" id="request-content">
-  </tbody>
-</table>
-  `
-  );
 
-  let reqContent = document.getElementById("request-content");
-
-  let res = await fetch(getAssetURL, {
-    method: "GET",
-    headers: headers,
-  });
-
-  let data = await res.json();
-  let user = await getUser();
-
-  if (data.success) {
-    assetsData = data.message;
-    data.message.forEach((asset, index) => {
-      if (asset.asset.owner === user) {
-        reqContent.insertAdjacentHTML(
-          "beforeend",
-          `
-                    <tr style="text-align: center; font-size: 16px;">
-                        <td>${index + 1}</td>
-                        <td>${asset._id}</td>
-                        <td> ${asset.asset.type} </td>
-                        <td> ${asset.price} $</td>
-                        <td id="bid-${index}">
-                        </td>
-                        <td><button class="btn btn-primary1" id="bid-radio-${index}" onclick="getSelectedCustomer('bid-radio-${index}', '${
-            asset._id
-          }')">Confirm</button></td>
-                    </tr>
-                `
-        );
-
-        let bidIndex = document.getElementById(`bid-${index}`);
-        Object.keys(asset.bids).forEach((bid, j) => {
-          bidIndex.insertAdjacentHTML(
-            "beforeend",
-            `
-                    <div class="custom-control custom-radio">
-                        <input class="custom-control-input" value="${bid}" type="radio" id="bid-radio-${j}-${index}" name="bid-radio-${index}">
-                        <label for="bid-radio-${j}-${index}" class="custom-control-label">
-                            ${bid}- ${asset.bids[bid]}$
-                        </label>
-                    </div>
-                    `
-          );
-        });
-      }
-    });
-  }
-};
-
-// accept local delivert req
-const acceptLDReq = (acceptBtnId, idx) => {
-  let acceptBtn = document.getElementById(acceptBtnId);
-  acceptBtn.innerHTML = `<div class="d-flex justify-content-center">
-  <div class="spinner-border" role="status">
-  </div>
-</div`;
-
-  const data = {
-    id: idx,
-  };
-
-  fetch(addToLocalDCURL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.result?.message.toLowerCase().includes("successful")) {
-        changeAssetStatus(
-          idx,
-          localDelivery.name,
-          "local",
-          data.result.message,
-          acceptBtn
-        );
-      } else {
-        acceptBtn.innerHTML = "";
-        acceptBtn.innerText = "Accept";
-
-        containerfluid.insertAdjacentHTML(
-          "afterbegin",
-          `
-          <div class="alert alert-danger" role="alert" id='alert-2'>
-           something went wrong
-          </div>  
-      `
-        );
-        let alert2 = document.getElementById("alert-2");
-        setTimeout(() => alert2.remove(), 3000);
-      }
-    });
-};
-
-// accept global delivery req
-const acceptGDReq = (acceptBtnId, idx) => {
-  let acceptBtn = document.getElementById(acceptBtnId);
-  acceptBtn.innerHTML = `<div class="d-flex justify-content-center">
-  <div class="spinner-border" role="status">
-  </div>
-</div`;
-
-  const data = {
-    id: idx,
-  };
-
-  fetch(addToGlobalDCURL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.result?.message.toLowerCase().includes("successful")) {
-        changeAssetStatus(
-          idx,
-          globalDelivery.name,
-          "global",
-          data.result.message,
-          acceptBtn
-        );
-      } else {
-        acceptBtn.innerHTML = "";
-        acceptBtn.innerText = "Accept";
-
-        containerfluid.insertAdjacentHTML(
-          "afterbegin",
-          `
-          <div class="alert alert-danger" role="alert" id='alert-2'>
-           something went wrong
-          </div>  
-      `
-        );
-        let alert2 = document.getElementById("alert-2");
-        setTimeout(() => alert2.remove(), 3000);
-      }
-    });
-};
-
-// get local delivert req
-const getAssetsByStatusName = (name) => {
-  fetch(`${getAssetsByStatusURL}?status=${name}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => setRequestForLD(data.result));
-};
-
-// LD -> Local Delivery
-const setRequestForLD = (data = []) => {
-  acceptAllBtn.style.display = "block";
-  requestTable.insertAdjacentHTML(
-    "beforeend",
-    `
-  <table class="table table-bordered">
-  <thead>
-    <tr style="text-align: center;">
-    <th scope="col">
-        <input type="checkbox" value="" id="batch-check-box" onclick='selectAll()' />
-      </th>
-      <th>Serial No.</th>
-      <th>Owner</th>
-      <th>Buyer</th>
-      <th>Price</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody class="table-content" id="request-content">
-  </tbody>
-</table>
-  `
-  );
-
-  let reqContent = document.getElementById("request-content");
-
-  data.forEach((asset, index) =>
-    reqContent.insertAdjacentHTML(
-      "beforeend",
-      `
-        <tr style="text-align: center; font-size: 16px;">
-        <th scope="row">
-            <input type="checkbox" value="${index}" id="asset-checkbox">
-            <label for="check1"></label>
-        </th>
-        <td>${asset.SerialNumber}</td>
-        <td> ${asset.owner} </td>
-        <td> ${asset.buyer} $</td>
-        <td> ${asset.price}</td>
-        <td>
-        <button class="btn btn-primary1" id="accept-${index}" onclick="acceptLDReq('accept-${index}','${asset.id}' )">Accept</button>
-        </td>
-      </tr>
-
-  `
-    )
-  );
-};
-
-// get global delivert req
-const getAssetsByStatusNameG = (name) => {
-  fetch(`${getAssetsByStatusURL}?status=${name}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => setRequestForGD(data.result));
-};
-
-// GD -> Global Delivery
-const setRequestForGD = (data = []) => {
-  acceptAllBtn.style.display = "block";
-
-  requestTable.insertAdjacentHTML(
-    "beforeend",
-    `
-  <table class="table table-bordered">
-  <thead>
-    <tr style="text-align: center;">
-    <th scope="col">
-        <input type="checkbox" value="" id="batch-check-box" />
-        <label for="check1"></label>
-      </th>
-      <th>Serial No.</th>
-      <th>Owner</th>
-      <th>Buyer</th>
-      <th>Price</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody class="table-content" id="request-content">
-  </tbody>
-</table>
-  `
-  );
-
-  let reqContent = document.getElementById("request-content");
-
-  data.forEach((asset, index) =>
-    reqContent.insertAdjacentHTML(
-      "beforeend",
-      `
-        <tr style="text-align: center; font-size: 16px;">
-        <th scope="row">
-            <input type="checkbox" value="${index}" id="asset-checkbox">
-            <label for="check1"></label>
-        </th>
-        <td>${asset.SerialNumber}</td>
-        <td> ${asset.owner} </td>
-        <td> ${asset.buyer} $</td>
-        <td> ${asset.price}</td>
-        <td>
-        <button class="btn btn-primary1" id="accept-${index}" onclick="acceptGDReq('accept-${index}','${asset.id}' )">Accept</button>
-        </td>
-      </tr>
-
-  `
-    )
-  );
-};
 
 function selectAll() {
   let btn = document.getElementById("batch-check-box");
@@ -670,12 +374,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            activityTabSection.style.display = "block";
-            timelineTabSection.style.display = "block";
-
-            activityTabPanelSection.classList.add("active");
-            activityTabSection.classList.add("active");
-            activityNavLink.classList.add("active");
 
             return;
 
@@ -684,10 +382,8 @@ const setRoleAccess = (currUser) => {
             shopSection.style.display = "block";
             requestSection.style.display = "block";
 
-            requestTabSection.style.display = "block";
 
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
+
             // window.location.replace("./Warehouse.html");
             setRequests();
             return;
@@ -696,60 +392,36 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            activityTabSection.style.display = "block";
-            timelineTabSection.style.display = "block";
 
             // activityTabPanelSection.classList.add("active");
             // activityTabSection.classList.add("active");
-
-            requestTabSection.style.display = "block";
-
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
             return;
 
           case "Retailer":
             listSection.style.display = "block";
             shopSection.style.display = "block";
             historySection.style.display = "block";
-            activityTabSection.style.display = "block";
-            timelineTabSection.style.display = "block";
 
             // activityTabPanelSection.classList.add("active");
             // activityTabSection.classList.add("active");
-
-            requestTabSection.style.display = "block";
-
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
             return;
 
           case "LocalDelivery":
-            requestTabSection.style.display = "block";
             listSection.style.display = "block";
             requestSection.style.display = "block";
 
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
-
-            getAssetsByStatusName(readyToLocalDelivery.name);
             return;
 
           case "GlobalDelivery":
-            requestTabSection.style.display = "block";
             listSection.style.display = "block";
             requestSection.style.display = "block";
 
-            requestTabPanelSection.classList.add("active");
-            requestTabSection.classList.add("active");
-            getAssetsByStatusNameG(readyToGlobalDelivery.name);
             return;
 
           case "Customer":
             listSection.style.display = "block";
             timelineTabSection.style.display = "block";
             addMoneySection.style.display = "block";
-            timelineTabSection.classList.add("active");
             shopSection.style.display = "block";
             return;
         }
@@ -763,53 +435,7 @@ const formatUserHistoryDateField = (dateStr) => {
   return dateStr.substring(4, index - 1);
 };
 
-const setUserHistoryTable = () => {
-  fetch(getUserHistoryURL, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-      if (data.result.length > 0) {
-        data.result.forEach((item, index) => {
-          userHistoryTable.insertAdjacentHTML(
-            "beforeend",
-            `
-                <tr
-                style="text-align: center; font-size: 16px"
-              >
-                <td>${index + 1}</td>
-                <td>${item._id}</td>
-                <td>${item.tx}</td>
-                <td>${formatUserHistoryDateField(item.date)}</td>
-                <td></td>
-              </tr>
-
-          `
-          );
-        });
-      }
-    });
-};
-
-const setSelectionModeInSidebarButtons = () => {
-  let pageName = localStorage.getItem("pageName");
-
-  if (pageName == requestTabSection.textContent.trim()) {
-    requestTabSection.classList.add("active");
-  }
-  if (pageName == activityTabSection.textContent.trim()) {
-    activityTabSection.classList.add("active");
-  }
-  if (pageName == timelineTabSection.textContent.trim()) {
-    timelineTabSection.classList.add("active");
-  }
-};
-
 window.addEventListener("load", () => {
   getToken();
   // await setRequests();
-  setUserHistoryTable();
 });

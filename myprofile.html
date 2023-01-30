@@ -1,40 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- <meta http-equiv="X-UA-Compatible" content="ie=edge" /> -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://bootswatch.com/4/flatly/bootstrap.min.css" />
-  <title>Cart</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Profile</title>
 
   <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Tempusdominus Bootstrap 4 -->
-  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- JQVMap -->
-  <link rel="stylesheet" href="plugins/jqvmap/jqvmap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
-  <!-- overlayScrollbars -->
-  <link rel="stylesheet" href="plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-  <!-- Daterange picker -->
-  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
-  <!-- summernote -->
-  <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-  <link rel="stylesheet" href="project/list/source/content/app.css" />
-</head>
+  <link rel="stylesheet" href="project/profile.css">
 
-<body class="hold-transition sidebar-mini layout-fixed">
+</head>
+<body class="hold-transition sidebar-mini">
+
   <div class="wrapper">
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -49,7 +30,7 @@
           <a
             href="liste.html"
             class="nav-link"
-            style="color: #020202; font-size: larger"
+            style="color: #050505; font-size: larger"
             >MetaDeSC</a
           >
         </li>
@@ -376,77 +357,194 @@
       </div>
       <!-- /.sidebar -->
     </aside>
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
 
-    <div class="content-wrapper">
-    <div class="container mt-4">
-      
-    <div class="container-fluid">
-      <div class="card">      
-        <div class="card-header">
-          <h3 class="card-title"  >َAssets Status</h3>
-        </div>
-      <div class="card-body table-responsive">
-        <table class="table table-bordered" style="max-width: 100%;">
-          <thead>
-            <tr style="text-align: center;">
-              <th style="width: .1rem"></th>
-              <th>ID</th>
-              <th>Company Name</th>
-              <th>Base Price</th>
-              <th>Bid Price</th>
-              <th>Amount</th>
-              <th style="width: 5rem">Status</th>
-            </tr>
-          </thead>
-          <tbody class="table-content">
-            
-            
-          </tbody>
-        </table>
-      </div>
-        </div>  
-      </div>
+    </section>
 
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
 
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline" id="profile-card">
+              <div class="card-body box-profile">
+                <div class="text-center">
+                  <img class="profile-user-img img-fluid img-circle"
+                       src="dist/img/photo_5940350258028592186_m.jpg"
+                       alt="User profile picture">
+                </div>
 
+                <h3 class="profile-username text-center"></h3>
 
+                <p class="text-muted text-center"> Asset </p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Date Joined: </b> <a class="float-right">2022/05/22</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Inventory</b> <a class="float-right" id="inventory"></a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Blocked inventory</b> <a class="float-right" id="blocked-amount"></a>
+                  </li>
+                </ul>
+
+                <a href="#" class="btn btn-primary1 btn-block"><b>Edit Logo</b></a>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- About Me Box -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">About Me</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <strong><i class="fas fa-envelope mr-1"></i> Email</strong>
+
+                <p class="text-muted">
+                  info@gmail.com
+                </p>
+
+                <hr>
+
+                <strong><i class="fas fa-phone mr-1"></i></i> Phone</strong>
+                <p class="text-muted">
+                  +1256987453
+                </p>
+
+                <hr>
+
+                <strong><i class="fas fa-map-marker-alt mr-1"></i> Location</strong>
+
+                <p class="text-muted">Malibu, California</p>
+
+                <hr>
+
+                <strong><i class="far fa-file-alt mr-1"></i> Notes</strong>
+
+                <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
           </div>
-          <!-- jQuery -->
-          <script src="plugins/jquery/jquery.min.js"></script>
-          <!-- jQuery UI 1.11.4 -->
-          <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
-          <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-          <script>
-            $.widget.bridge('uibutton', $.ui.button)
-          </script>
-          <!-- Bootstrap 4 -->
-          <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-          <!-- ChartJS -->
-          <script src="plugins/chart.js/Chart.min.js"></script>
-          <!-- Sparkline -->
-          <script src="plugins/sparklines/sparkline.js"></script>
-          <!-- JQVMap -->
-          <script src="plugins/jqvmap/jquery.vmap.min.js"></script>
-          <script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
-          <!-- jQuery Knob Chart -->
-          <script src="plugins/jquery-knob/jquery.knob.min.js"></script>
-          <!-- daterangepicker -->
-          <script src="plugins/moment/moment.min.js"></script>
-          <script src="plugins/daterangepicker/daterangepicker.js"></script>
-          <!-- Tempusdominus Bootstrap 4 -->
-          <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-          <!-- Summernote -->
-          <script src="plugins/summernote/summernote-bs4.min.js"></script>
-          <!-- overlayScrollbars -->
-          <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-          <!-- AdminLTE App -->
-          <script src="dist/js/adminlte.js"></script>
-          <!-- AdminLTE for demo purposes -->
-          <!-- <script src="dist/js/demo.js"></script> -->
-          <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-          <script src="dist/js/pages/dashboard.js"></script>
+          <!-- /.col -->
+          <div class="col-md-9">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#settings" data-toggle="tab">Edit Profile</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                     <!-- /.tab-pane -->
+                  <div class="tab-pane " id="requests">
+                    <!-- The requests -->
 
-          <script src="cart.js"></script>
+                    <div class="container-fluid" id="confirm">
+                      <div class="card">      
+                      <div class="card-body" id="request-table">
+                        
+                      </div>
+                        </div>  
+                      </div>
+                    
+                  </div>
+                  <!-- /.tab-pane -->
+
+
+
+
+                  <div class="tab-pane show active" id="settings">
+                    <form class="form-horizontal">
+
+                      <div class="form-group row">
+                        <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                          <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="inputName2" class="col-sm-2 col-form-label">Phone</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="inputName2" placeholder="Phone">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="inputName" class="col-sm-2 col-form-label">Location</label>
+                        <div class="col-sm-10">
+                          <input type="email" class="form-control" id="inputName" placeholder="Location">
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="inputExperience" class="col-sm-2 col-form-label">Notes</label>
+                        <div class="col-sm-10">
+                          <textarea class="form-control" id="inputExperience" placeholder="Notes"></textarea>
+                        </div>
+                      </div>
+                      <!-- <div class="form-group row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
+                            </label>
+                          </div>
+                        </div>
+                      </div> -->
+                      <div class="form-group row">
+                        <div class="offset-sm-2 col-sm-10">
+                          <button type="submit" class="btn btn-primary1">Submit</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      <b></b> 
+    </div>
+    <strong></strong> 
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="./myprofile.js"></script>
 </body>
-
 </html>

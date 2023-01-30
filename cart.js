@@ -109,7 +109,6 @@ const setRoleAccess = (currUser) => {
             listSection.style.display = "block";
             productionSection.style.display = "block";
             historySection.style.display = "block";
-            addMoneySection.style.display = "block";
             return;
 
           case "Warehouse":
