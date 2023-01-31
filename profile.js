@@ -662,7 +662,7 @@ const setRoleAccess = (currUser) => {
         let userRole = data.message.filter(
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
-        usernameSidebar.textContent = userRole.role;
+        usernameSidebar.textContent = userRole.nickname;
         // console.log(userRole.role);
 
         switch (userRole.role) {

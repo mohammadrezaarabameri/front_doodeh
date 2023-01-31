@@ -58,7 +58,7 @@ const sellChicken = "channels/mychannel/chaincodes/chaincode/chicken/sell";
 
 const addEmptyBatch = "channels/mychannel/chaincodes/chaincode/batch/create";
 
-const getUsersRole = "organizations/roles";
+const getUsersRole = "organizations";
 
 const addMoneyURL = `${HOST}/${addMoney}`;
 const getTokenURL = `${HOST}/${getTokenEndpoint}`;
@@ -227,7 +227,7 @@ const addBulkBatch = () => {
         BatchTable.insertAdjacentHTML(
           "beforeend",
           `<tr>
-                <th>${data.result.body.id}</th>
+                <th>${data.result.body.SerialNumber}</th>
                 <th>${data.result.body.owner}</th>
                 <th>${data.result.body.childesCount}</th>
             </tr>
@@ -306,7 +306,7 @@ const setRoleAccess = (currUser) => {
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
 
-        usernameSidebar.textContent = userRole.role;
+        usernameSidebar.textContent = userRole.nickname;
         switch (userRole.role) {
           case "Factory":
             listSection.style.display = "block";

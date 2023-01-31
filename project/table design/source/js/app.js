@@ -1804,7 +1804,7 @@ const setRoleAccess = (currUser) => {
           (userRoleObj) => userRoleObj.username === currUser
         )[0];
 
-        usernameSidebar.textContent = userRole.role;
+        usernameSidebar.textContent = userRole.nickname;
 
         setTheTable(userRole.role);
         switch (userRole.role) {
